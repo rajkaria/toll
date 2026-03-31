@@ -1,4 +1,6 @@
-import Database from "better-sqlite3"
+import DatabaseConstructor, { type Database as DatabaseType } from "better-sqlite3"
+// Handle ESM/CJS interop — better-sqlite3 is CJS
+const Database = (DatabaseConstructor as unknown as { default?: typeof DatabaseConstructor }).default ?? DatabaseConstructor
 import fs from "node:fs"
 import path from "node:path"
 import os from "node:os"
@@ -33,7 +35,7 @@ interface ProtocolSplit {
 }
 
 export class EarningsTracker {
-  private db: Database.Database
+  private db: DatabaseType
 
   constructor(dataDir?: string) {
     const dir = dataDir ?? path.join(os.homedir(), ".toll")
