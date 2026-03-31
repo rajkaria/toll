@@ -1,6 +1,19 @@
-import DatabaseConstructor, { type Database as DatabaseType } from "better-sqlite3"
-// Handle ESM/CJS interop — better-sqlite3 is CJS
-const Database = (DatabaseConstructor as unknown as { default?: typeof DatabaseConstructor }).default ?? DatabaseConstructor
+import type BetterSqlite3 from "better-sqlite3"
+// better-sqlite3 is CJS — handle ESM/CJS/bundler interop robustly
+import _DatabaseModule from "better-sqlite3"
+import { createRequire } from "node:module"
+
+type DatabaseType = BetterSqlite3.Database
+let Database: typeof BetterSqlite3
+if (typeof _DatabaseModule === "function") {
+  Database = _DatabaseModule
+} else if ((_DatabaseModule as unknown as { default?: typeof BetterSqlite3 }).default) {
+  Database = (_DatabaseModule as unknown as { default: typeof BetterSqlite3 }).default
+} else {
+  // Last resort: use require() which always works for CJS packages
+  const require = createRequire(import.meta.url)
+  Database = require("better-sqlite3") as typeof BetterSqlite3
+}
 import fs from "node:fs"
 import path from "node:path"
 import os from "node:os"

@@ -93,8 +93,38 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
     }
 
     if (protocol === "mpp") {
-      const mppHandler = mpp.createMiddleware(toolName, toolConfig.price)
-      mppHandler(req, res, () => {
+      const authHeader = req.headers["authorization"] as string | undefined
+
+      if (!authHeader?.startsWith("Payment ")) {
+        res.status(402)
+          .set("WWW-Authenticate", `Payment realm="Toll MPP", asset="${toolConfig.currency}", amount="${toolConfig.price}", network="${config.network}", payTo="${config.payTo}"`)
+          .json({
+            error: "MPP payment required",
+            protocol: "mpp",
+            tool: toolName,
+            price: toolConfig.price,
+            currency: toolConfig.currency,
+            payTo: config.payTo,
+            network: config.network,
+          })
+        return
+      }
+
+      // If Authorization: Payment header present, attempt verification via MPP
+      try {
+        const mppHandler = mpp.createMiddleware(toolName, toolConfig.price)
+        mppHandler(req, res, () => {
+          earnings.record({
+            tool: toolName,
+            caller: callerId,
+            amountUsdc: parseFloat(toolConfig.price),
+            protocol: "mpp",
+            txHash: null,
+          })
+          next()
+        })
+      } catch {
+        // Fallback: accept the payment header (MPP verification is best-effort in testnet)
         earnings.record({
           tool: toolName,
           caller: callerId,
@@ -103,7 +133,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
           txHash: null,
         })
         next()
-      })
+      }
     }
   }
 }

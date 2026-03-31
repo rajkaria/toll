@@ -67,7 +67,25 @@ export class MPPVerifier {
           [(mppInstance as any)["stellar/charge"], { amount: toUsdcBaseUnits(priceUsdc) }]
         ) as RequestHandler
 
-        return mppMiddleware(req, res, next)
+        // mppx expects Request with .headers.get() (Fetch API).
+        // Express req has .headers as a plain object. Wrap it.
+        const expressReq = req as { headers: Record<string, string | string[] | undefined> }
+        const wrappedReq = {
+          ...expressReq,
+          headers: new Proxy(expressReq.headers, {
+            get(target, prop) {
+              if (prop === "get") {
+                return (name: string) => {
+                  const val = target[name.toLowerCase()]
+                  return Array.isArray(val) ? val[0] : val ?? null
+                }
+              }
+              return (target as Record<string | symbol, unknown>)[prop]
+            },
+          }),
+        }
+
+        return mppMiddleware(wrappedReq, res, next)
       } catch (err) {
         console.warn(`[Toll] MPP middleware error for tool '${tool}':`, err)
         return next()

@@ -1,3 +1,4 @@
+import "dotenv/config"
 import express from "express"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { tollMiddleware, loadConfig, withToll } from "@toll/gateway"
@@ -19,12 +20,10 @@ async function main() {
   // Apply Toll payment gateway middleware
   app.use("/mcp", tollMiddleware(config))
 
-  // Create and patch MCP server
-  const mcpServer = createMcpServer()
-  withToll(mcpServer, config)
-
-  // MCP over HTTP transport
+  // MCP over HTTP transport — stateless mode, fresh server per request
   app.post("/mcp", async (req, res) => {
+    const mcpServer = createMcpServer()
+    withToll(mcpServer, config)
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
     })

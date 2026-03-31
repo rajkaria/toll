@@ -30,9 +30,18 @@ function dim(s: string) {
   return `\x1b[2m${s}\x1b[0m`
 }
 
-/** Encode a PaymentPayload into the payment-signature header value */
-function encodePaymentSignature(payload: unknown): string {
-  return Buffer.from(JSON.stringify(payload)).toString("base64")
+/** Parse JSON from an SSE response body */
+async function parseSseResponse(resp: Response): Promise<unknown> {
+  const text = await resp.text()
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim()
+    if (trimmed.startsWith("data:")) {
+      const jsonStr = trimmed.slice(5).trim()
+      if (jsonStr) return JSON.parse(jsonStr)
+    }
+  }
+  // Fallback: try parsing the whole body as JSON
+  try { return JSON.parse(text) } catch { return null }
 }
 
 interface McpCallResult {
@@ -58,12 +67,12 @@ async function callMcpTool(
   // First attempt — no payment header
   const resp1 = await fetch(MCP_ENDPOINT, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", "accept": "application/json, text/event-stream" },
     body,
   })
 
   if (resp1.status === 200) {
-    const data = await resp1.json()
+    const data = await parseSseResponse(resp1)
     return { paid: false, result: data }
   }
 
@@ -103,7 +112,7 @@ async function callMcpTool(
     })
 
     if (resp2.status === 200) {
-      const data = await resp2.json()
+      const data = await parseSseResponse(resp2)
       const settleResp = httpClient.getPaymentSettleResponse((name) => resp2.headers.get(name))
       return {
         paid: true,
