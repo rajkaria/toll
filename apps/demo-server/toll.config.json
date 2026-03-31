@@ -1,0 +1,32 @@
+{
+  "network": "testnet",
+  "payTo": "REPLACE_WITH_SERVER_STELLAR_ADDRESS",
+  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "defaultPaymentMode": "x402",
+  "tools": {
+    "health_check": {
+      "price": "0",
+      "currency": "USDC",
+      "description": "Free health check — server status and version"
+    },
+    "search_competitors": {
+      "price": "0.01",
+      "currency": "USDC",
+      "description": "Search for competitor information ($0.01 USDC per call)"
+    },
+    "analyze_sentiment": {
+      "price": "0.02",
+      "currency": "USDC",
+      "description": "Analyze sentiment of a URL ($0.02 USDC per call)"
+    },
+    "compare_products": {
+      "price": "0.05",
+      "currency": "USDC",
+      "paymentMode": "mpp",
+      "description": "Compare two products side-by-side ($0.05 USDC per call, paid via MPP)"
+    }
+  },
+  "mpp": {
+    "enabled": true
+  }
+}
