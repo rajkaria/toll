@@ -1,6 +1,6 @@
 {
   "network": "testnet",
-  "payTo": "REPLACE_WITH_SERVER_STELLAR_ADDRESS",
+  "payTo": "GAYTNRASCUCIKFXILX5OLZOFTE6QLNT76BIJ66BQWIBUNUJWVEZUPH6N",
   "facilitatorUrl": "https://x402-facilitator.stellar.org",
   "defaultPaymentMode": "x402",
   "tools": {
