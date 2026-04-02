@@ -52,6 +52,25 @@ export async function GET() {
     const x402Row = protocolRows.find((r) => r.protocol === "x402")
     const mppRow = protocolRows.find((r) => r.protocol === "mpp")
 
+    // Analytics: earnings per day (last 7 days)
+    const earningsPerDay = db.prepare(`
+      SELECT date(created_at/1000, 'unixepoch') as day, COALESCE(SUM(amount_usdc),0) as earnings
+      FROM transactions GROUP BY day ORDER BY day DESC LIMIT 7
+    `).all() as Array<{ day: string; earnings: number }>
+
+    // Analytics: calls per hour (last 24h)
+    const oneDayAgo = Date.now() - 86400000
+    const callsPerHour = db.prepare(`
+      SELECT strftime('%H', created_at/1000, 'unixepoch') as hour, COUNT(*) as calls
+      FROM transactions WHERE created_at >= ? GROUP BY hour ORDER BY hour
+    `).all(oneDayAgo) as Array<{ hour: string; calls: number }>
+
+    // Analytics: top callers
+    const topCallers = db.prepare(`
+      SELECT caller, COUNT(*) as calls, COALESCE(SUM(amount_usdc),0) as total
+      FROM transactions WHERE caller IS NOT NULL GROUP BY caller ORDER BY total DESC LIMIT 5
+    `).all() as Array<{ caller: string; calls: number; total: number }>
+
     return NextResponse.json({
       stats: {
         totalEarnings: total.earnings,
@@ -67,6 +86,11 @@ export async function GET() {
             x402: Math.round(((x402Row?.cnt ?? 0) / totalCount) * 100),
             mpp: Math.round(((mppRow?.cnt ?? 0) / totalCount) * 100),
           },
+      analytics: {
+        earningsPerDay: earningsPerDay.reverse(),
+        callsPerHour,
+        topCallers,
+      },
     }, { headers: { "Cache-Control": "no-store" } })
   } finally {
     db.close()
