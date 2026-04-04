@@ -79,9 +79,9 @@ export default function ToolsPage() {
   return (
     <main className="max-w-6xl mx-auto px-6 py-10">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold text-white tracking-tight">Tool Marketplace</h1>
+        <h1 className="text-3xl font-bold text-white tracking-tight">Available Tools</h1>
         <p className="text-sm text-gray-500 mt-2">
-          Monetized MCP tools available on the Watchdog Lite demo server
+          Monetized MCP tools on the Watchdog Lite demo server
         </p>
       </div>
 

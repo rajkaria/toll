@@ -266,6 +266,50 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Why Toll */}
+      <section className="py-24 px-6 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent pointer-events-none" />
+        <div className="max-w-4xl mx-auto relative">
+          <div className="text-center mb-12">
+            <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest mb-3">Differentiation</p>
+            <h2 className="text-3xl font-bold text-white tracking-tight">Why Toll vs. raw x402</h2>
+            <p className="text-sm text-gray-500 mt-3">x402 is a protocol. Toll is the infrastructure layer on top.</p>
+          </div>
+
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
+                  <th className="px-6 py-4 text-left font-medium">Capability</th>
+                  <th className="px-6 py-4 text-center font-medium">Raw x402</th>
+                  <th className="px-6 py-4 text-center font-medium text-emerald-400">Toll</th>
+                </tr>
+              </thead>
+              <tbody className="text-xs">
+                {[
+                  ["Config-driven pricing (JSON)", "—", "check"],
+                  ["Dual protocol (x402 + MPP)", "—", "check"],
+                  ["Built-in earnings dashboard", "—", "check"],
+                  ["Free tier rate limiting", "—", "check"],
+                  ["SQLite earnings tracking", "—", "check"],
+                  ["Replay protection", "—", "check"],
+                  ["Drop-in Express middleware", "—", "check"],
+                  ["Multi-currency display (USDC/XLM)", "—", "check"],
+                  ["Stellar-native settlement", "check", "check"],
+                  ["HTTP 402 standard", "check", "check"],
+                ].map(([cap, raw, toll]) => (
+                  <tr key={cap} className="border-b border-white/5 last:border-0">
+                    <td className="px-6 py-3 text-gray-300">{cap}</td>
+                    <td className="px-6 py-3 text-center">{raw === "check" ? <span className="text-gray-400">&#10003;</span> : <span className="text-gray-700">—</span>}</td>
+                    <td className="px-6 py-3 text-center">{toll === "check" ? <span className="text-emerald-400">&#10003;</span> : <span className="text-gray-700">—</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section className="py-24 px-6 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent pointer-events-none" />

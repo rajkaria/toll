@@ -19,7 +19,7 @@ app.listen(3002)`
 export const TOLL_CONFIG_SNIPPET = `{
   "network": "testnet",
   "payTo": "G...YOUR_STELLAR_ADDRESS",
-  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
     "my_free_tool":   { "price": "0",    "currency": "USDC" },

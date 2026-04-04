@@ -13,13 +13,17 @@ export class RateLimiter {
     return `${callerId}:${tool}`
   }
 
+  private getWindowMs(toolConfig: TollToolConfig): number {
+    return toolConfig.rateLimit?.perHour ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000
+  }
+
   isWithinFreeTier(callerId: string, tool: string, toolConfig: TollToolConfig): boolean {
     if (!toolConfig.rateLimit) return false
 
-    const { free, perHour } = toolConfig.rateLimit
+    const { free } = toolConfig.rateLimit
     const key = this.key(callerId, tool)
     const now = Date.now()
-    const windowMs = perHour ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000
+    const windowMs = this.getWindowMs(toolConfig)
 
     const entry = this.usage.get(key)
     if (!entry || now - entry.windowStart > windowMs) {
@@ -29,11 +33,11 @@ export class RateLimiter {
     return entry.count < free
   }
 
-  increment(callerId: string, tool: string): void {
+  increment(callerId: string, tool: string, toolConfig: TollToolConfig): void {
     const key = this.key(callerId, tool)
     const now = Date.now()
     const entry = this.usage.get(key)
-    const windowMs = 60 * 60 * 1000
+    const windowMs = this.getWindowMs(toolConfig)
 
     if (!entry || now - entry.windowStart > windowMs) {
       this.usage.set(key, { count: 1, windowStart: now })

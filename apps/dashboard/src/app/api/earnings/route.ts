@@ -66,7 +66,7 @@ function getDemoData() {
         { caller: "GC3DMFPW6YQLHG7KHZR5OPCXATSVQQ2R", calls: 10, total: 0.26 },
       ],
     },
-    _demo: true,
+    // Demo data served when SQLite unavailable (e.g. Vercel serverless)
   }
 }
 

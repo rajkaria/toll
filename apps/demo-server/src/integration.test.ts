@@ -18,7 +18,7 @@ import { createMcpServer } from "./server.js"
 const TEST_CONFIG = {
   network: "testnet" as const,
   payTo: "GDUMMY000000000000000000000000000000000000000000000000000",
-  facilitatorUrl: "https://x402-facilitator.stellar.org",
+  facilitatorUrl: "https://x402.org/facilitator",
   defaultPaymentMode: "x402" as const,
   dataDir: "/tmp/toll-test",
   tools: {

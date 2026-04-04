@@ -79,7 +79,7 @@ TOLL_SERVER_SECRET=${serverKeypair.secret()}
 TOLL_SERVER_ADDRESS=${serverKeypair.publicKey()}
 ANTHROPIC_API_KEY=sk-ant-...
 TOLL_DATA_DIR=~/.toll
-X402_FACILITATOR_URL=https://x402-facilitator.stellar.org
+X402_FACILITATOR_URL=https://x402.org/facilitator
 `)
 
   console.log(bold("=== Also update toll.config.json ==="))

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "/Users/rajkaria/.bun/bin/bunx",
+      "runtimeArgs": ["next", "dev", "--port", "3003"],
+      "port": 3003,
+      "cwd": "apps/dashboard"
+    }
+  ]
+}

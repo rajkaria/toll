@@ -9,7 +9,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Toll — MCP Monetization Gateway",
     description: "Monetize your MCP server with Stellar micropayments. x402 + MPP protocols.",
-    siteName: "Toll",
+    siteName: "Tollpay",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "Tollpay — MCP Monetization Gateway for Stellar" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Toll — MCP Monetization Gateway",
+    description: "Charge AI agents for MCP tool calls with x402 + MPP on Stellar",
+    images: ["/api/og"],
   },
 }
 

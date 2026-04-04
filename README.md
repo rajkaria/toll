@@ -76,7 +76,7 @@ TOLL_SERVER_SECRET=S<your-server-secret>
 TOLL_SERVER_ADDRESS=G<your-server-public>
 ANTHROPIC_API_KEY=sk-ant-...
 TOLL_DATA_DIR=~/.toll
-X402_FACILITATOR_URL=https://x402-facilitator.stellar.org
+X402_FACILITATOR_URL=https://x402.org/facilitator
 ```
 
 ### 4. Start the demo server

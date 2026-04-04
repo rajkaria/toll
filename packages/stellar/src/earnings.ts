@@ -75,6 +75,14 @@ export class EarningsTracker {
   }
 
   record(input: RecordInput): string {
+    // Idempotency: if this tx_hash was already recorded, skip duplicate
+    if (input.txHash) {
+      const existing = this.db
+        .prepare(`SELECT id FROM transactions WHERE tx_hash = ?`)
+        .get(input.txHash) as { id: string } | undefined
+      if (existing) return existing.id
+    }
+
     const id = randomUUID()
     const now = Date.now()
     this.db

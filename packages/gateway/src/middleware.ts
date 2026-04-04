@@ -25,11 +25,34 @@ function isMcpToolCall(
   )
 }
 
+// Replay protection: track used payment signatures with TTL
+const REPLAY_TTL_MS = 5 * 60 * 1000 // 5 minutes
+class ReplayGuard {
+  private used = new Map<string, number>()
+
+  check(signature: string): boolean {
+    this.cleanup()
+    return this.used.has(signature)
+  }
+
+  mark(signature: string): void {
+    this.used.set(signature, Date.now())
+  }
+
+  private cleanup(): void {
+    const cutoff = Date.now() - REPLAY_TTL_MS
+    for (const [sig, ts] of this.used) {
+      if (ts < cutoff) this.used.delete(sig)
+    }
+  }
+}
+
 export function tollMiddleware(config: TollConfig): RequestHandler {
   const x402 = new X402Verifier(config)
   const mpp = new MPPVerifier(config)
   const earnings = new EarningsTracker(config.dataDir)
   const rateLimiter = new RateLimiter()
+  const replayGuard = new ReplayGuard()
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Only intercept MCP tool calls
@@ -51,7 +74,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
 
     // Check free tier rate limit
     if (rateLimiter.isWithinFreeTier(callerId, toolName, toolConfig)) {
-      rateLimiter.increment(callerId, toolName)
+      rateLimiter.increment(callerId, toolName, toolConfig)
       next()
       return
     }
@@ -72,6 +95,12 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
         return
       }
 
+      // Replay protection: reject already-used payment signatures
+      if (replayGuard.check(paymentHeader)) {
+        res.status(402).json({ error: "Payment signature already used (replay rejected)" })
+        return
+      }
+
       const requirements = x402.buildRequirements(toolName, toolConfig.price, resourceUrl)
       const result = await x402.settle(paymentHeader, requirements)
 
@@ -79,6 +108,9 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
         res.status(402).json({ error: result.error ?? "Payment verification failed" })
         return
       }
+
+      // Mark signature as used (replay protection)
+      replayGuard.mark(paymentHeader)
 
       earnings.record({
         tool: toolName,
@@ -123,16 +155,14 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
           })
           next()
         })
-      } catch {
-        // Fallback: accept the payment header (MPP verification is best-effort in testnet)
-        earnings.record({
-          tool: toolName,
-          caller: callerId,
-          amountUsdc: parseFloat(toolConfig.price),
+      } catch (err) {
+        console.error(`[Toll] MPP verification failed for tool '${toolName}':`, err)
+        res.status(402).json({
+          error: "MPP payment verification failed",
           protocol: "mpp",
-          txHash: null,
+          tool: toolName,
         })
-        next()
+        return
       }
     }
   }

@@ -325,7 +325,7 @@ Two wallets needed:
 
 Both created via Stellar Lab (https://laboratory.stellar.org/). Testnet USDC from Stellar Lab's USDC faucet (USDC issuer on testnet: `GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`).
 
-Facilitator: Use the hosted testnet facilitator from the x402-stellar repo or `https://x402-facilitator.stellar.org` if available.
+Facilitator: Use the hosted testnet facilitator from the x402-stellar repo or `https://x402.org/facilitator` if available.
 
 ---
 

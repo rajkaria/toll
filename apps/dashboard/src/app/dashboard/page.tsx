@@ -11,9 +11,7 @@ import { MiniTable } from "@/components/charts/MiniTable"
 import { CurrencyToggle } from "@/components/shared/CurrencyToggle"
 import type { EarningsData } from "@/lib/types"
 
-interface EarningsResponse extends EarningsData {
-  _demo?: boolean
-}
+type EarningsResponse = EarningsData
 
 const REFRESH_INTERVAL_MS = 5000
 
@@ -77,11 +75,6 @@ export default function Dashboard() {
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             MCP Monetization Gateway · Stellar Testnet
-            {data?._demo && (
-              <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                Demo Data
-              </span>
-            )}
           </p>
         </div>
         <div className="flex items-center gap-3">

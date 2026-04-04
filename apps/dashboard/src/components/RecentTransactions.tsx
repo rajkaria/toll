@@ -34,9 +34,14 @@ export function RecentTransactions({ records }: RecentTransactionsProps) {
                 <p className="text-xs text-gray-500 truncate">
                   {r.caller ? `${r.caller.slice(0, 8)}…` : "anonymous"}
                   {r.txHash && (
-                    <span className="ml-2 text-gray-600 font-mono">
-                      tx:{r.txHash.slice(0, 8)}…
-                    </span>
+                    <a
+                      href={`https://stellar.expert/explorer/testnet/tx/${r.txHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-emerald-500/60 hover:text-emerald-400 font-mono transition-colors"
+                    >
+                      tx:{r.txHash.slice(0, 8)}… ↗
+                    </a>
                   )}
                 </p>
               </div>

@@ -1,7 +1,7 @@
 {
   "network": "testnet",
   "payTo": "GAYTNRASCUCIKFXILX5OLZOFTE6QLNT76BIJ66BQWIBUNUJWVEZUPH6N",
-  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
     "health_check": {

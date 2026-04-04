@@ -197,7 +197,7 @@ npm install @toll/gateway @toll/stellar
 {
   "network": "testnet",
   "payTo": "GXXXX...YOUR_STELLAR_ADDRESS",
-  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
     "search_competitors": {

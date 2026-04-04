@@ -147,7 +147,7 @@ TOLL_AGENT_SECRET=S...           # Test agent wallet secret key
 TOLL_AGENT_ADDRESS=G...          # Test agent wallet public key
 
 # x402 facilitator
-X402_FACILITATOR_URL=https://x402-facilitator.stellar.org
+X402_FACILITATOR_URL=https://x402.org/facilitator
 # Or run locally: http://localhost:3001
 
 # Stellar testnet RPC
@@ -1793,7 +1793,7 @@ export default defineConfig({
 {
   "network": "testnet",
   "payTo": "REPLACE_WITH_SERVER_STELLAR_ADDRESS",
-  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
     "health_check": {
@@ -3159,7 +3159,7 @@ pnpm add @toll/gateway @toll/stellar
 {
   "network": "testnet",
   "payTo": "YOUR_STELLAR_ADDRESS",
-  "facilitatorUrl": "https://x402-facilitator.stellar.org",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
     "search_competitors": { "price": "0.01", "currency": "USDC" },

@@ -17,15 +17,15 @@ describe("RateLimiter", () => {
 
   it("allows free calls within the limit", () => {
     expect(limiter.isWithinFreeTier("caller1", "tool", freeWithLimit)).toBe(true)
-    limiter.increment("caller1", "tool")
-    limiter.increment("caller1", "tool")
+    limiter.increment("caller1", "tool", freeWithLimit)
+    limiter.increment("caller1", "tool", freeWithLimit)
     expect(limiter.isWithinFreeTier("caller1", "tool", freeWithLimit)).toBe(true)
   })
 
   it("blocks after free tier exceeded", () => {
-    limiter.increment("caller1", "tool")
-    limiter.increment("caller1", "tool")
-    limiter.increment("caller1", "tool")
+    limiter.increment("caller1", "tool", freeWithLimit)
+    limiter.increment("caller1", "tool", freeWithLimit)
+    limiter.increment("caller1", "tool", freeWithLimit)
     expect(limiter.isWithinFreeTier("caller1", "tool", freeWithLimit)).toBe(false)
   })
 
@@ -35,9 +35,9 @@ describe("RateLimiter", () => {
   })
 
   it("different callers are tracked independently", () => {
-    limiter.increment("caller1", "tool")
-    limiter.increment("caller1", "tool")
-    limiter.increment("caller1", "tool")
+    limiter.increment("caller1", "tool", freeWithLimit)
+    limiter.increment("caller1", "tool", freeWithLimit)
+    limiter.increment("caller1", "tool", freeWithLimit)
     expect(limiter.isWithinFreeTier("caller2", "tool", freeWithLimit)).toBe(true)
     expect(limiter.isWithinFreeTier("caller1", "tool", freeWithLimit)).toBe(false)
   })

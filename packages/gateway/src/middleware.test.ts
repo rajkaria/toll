@@ -98,4 +98,20 @@ describe("tollMiddleware", () => {
     await middleware(req as never, res as never, next)
     expect(next).toHaveBeenCalled()
   })
+
+  it("rejects replayed payment signatures", async () => {
+    const middleware = tollMiddleware(config)
+    const sig = "replay-test-sig-" + Date.now()
+
+    // First call should succeed
+    const call1 = makeReqRes("tools/call", "search_competitors", { "payment-signature": sig })
+    await middleware(call1.req as never, call1.res as never, call1.next)
+    expect(call1.next).toHaveBeenCalled()
+
+    // Second call with same signature should be rejected
+    const call2 = makeReqRes("tools/call", "search_competitors", { "payment-signature": sig })
+    await middleware(call2.req as never, call2.res as never, call2.next)
+    expect(call2.res.status).toHaveBeenCalledWith(402)
+    expect(call2.next).not.toHaveBeenCalled()
+  })
 })
