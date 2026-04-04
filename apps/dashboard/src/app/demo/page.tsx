@@ -26,6 +26,12 @@ export default function DemoPage() {
     setSubState("sending")
   }, [])
 
+  // Auto-run the free tool demo on page load
+  useEffect(() => {
+    const timer = setTimeout(() => runStep(0), 800)
+    return () => clearTimeout(timer)
+  }, [runStep])
+
   useEffect(() => {
     if (subState === "idle") return
     const step = DEMO_STEPS[stepIdx]
