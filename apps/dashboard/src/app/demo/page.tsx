@@ -26,11 +26,14 @@ export default function DemoPage() {
     setSubState("sending")
   }, [])
 
-  // Auto-run the free tool demo on page load
+  // Auto-run full demo: step 0 (free) → step 1 (paid x402 flow) on page load
+  const [autoPlaying, setAutoPlaying] = useState(true)
+
   useEffect(() => {
+    if (!autoPlaying) return
     const timer = setTimeout(() => runStep(0), 800)
     return () => clearTimeout(timer)
-  }, [runStep])
+  }, [runStep, autoPlaying])
 
   useEffect(() => {
     if (subState === "idle") return
@@ -46,17 +49,22 @@ export default function DemoPage() {
         timer = setTimeout(() => setSubState("paying"), 1500)
       } else {
         setCompletedSteps((s) => new Set(s).add(stepIdx))
-        timer = setTimeout(() => setSubState("idle"), 500)
+        // Auto-advance to next step if auto-playing
+        if (autoPlaying && stepIdx < DEMO_STEPS.length - 1) {
+          timer = setTimeout(() => runStep(stepIdx + 1), 1200)
+        } else {
+          timer = setTimeout(() => { setSubState("idle"); setAutoPlaying(false) }, 500)
+        }
       }
     } else if (subState === "paying") {
       timer = setTimeout(() => setSubState("paid"), 2000)
     } else if (subState === "paid") {
       setCompletedSteps((s) => new Set(s).add(stepIdx))
-      timer = setTimeout(() => setSubState("idle"), 500)
+      timer = setTimeout(() => { setSubState("idle"); setAutoPlaying(false) }, 1000)
     }
 
     return () => clearTimeout(timer)
-  }, [subState, stepIdx])
+  }, [subState, stepIdx, autoPlaying, runStep])
 
   const getRequestJson = () => {
     if (!currentStep) return ""

@@ -7,10 +7,17 @@ import {
 } from "@toll/stellar"
 import { RateLimiter } from "./rateLimiter.js"
 import { isFree } from "./config.js"
+import { SpendingPolicy } from "./spendingPolicy.js"
 
 const X402_HEADER = "payment-signature"
+const API_KEY_HEADER = "x-toll-api-key"
 
-function getCallerId(req: Request): string {
+function getCallerId(req: Request, config: TollConfig): string {
+  // API key takes precedence over IP for caller identification
+  const apiKey = req.headers[API_KEY_HEADER] as string | undefined
+  if (apiKey && config.apiKeys?.[apiKey]) {
+    return `key:${apiKey}`
+  }
   return req.ip ?? "anonymous"
 }
 
@@ -53,6 +60,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
   const earnings = new EarningsTracker(config.dataDir)
   const rateLimiter = new RateLimiter()
   const replayGuard = new ReplayGuard()
+  const spendingPolicy = new SpendingPolicy(config.spendingPolicy ?? {})
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // Only intercept MCP tool calls
@@ -70,7 +78,33 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
       return
     }
 
-    const callerId = getCallerId(req)
+    const callerId = getCallerId(req, config)
+
+    // API key validation: check tool access restrictions
+    const apiKey = req.headers[API_KEY_HEADER] as string | undefined
+    if (apiKey) {
+      const keyConfig = config.apiKeys?.[apiKey]
+      if (!keyConfig) {
+        res.status(401).json({ error: "Invalid API key" })
+        return
+      }
+      if (keyConfig.allowedTools?.length && !keyConfig.allowedTools.includes(toolName)) {
+        res.status(403).json({ error: `API key not authorized for tool '${toolName}'` })
+        return
+      }
+    }
+
+    // Spending policy enforcement (BEFORE payment)
+    const policyViolation = spendingPolicy.check(callerId, toolConfig.price)
+    if (policyViolation) {
+      res.status(429).json({
+        error: "Spending policy violation",
+        reason: policyViolation,
+        tool: toolName,
+        price: toolConfig.price,
+      })
+      return
+    }
 
     // Check free tier rate limit
     if (rateLimiter.isWithinFreeTier(callerId, toolName, toolConfig)) {
@@ -112,6 +146,9 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
       // Mark signature as used (replay protection)
       replayGuard.mark(paymentHeader)
 
+      // Record spend for policy tracking
+      spendingPolicy.record(callerId, parseFloat(toolConfig.price))
+
       earnings.record({
         tool: toolName,
         caller: result.payer ?? callerId,
@@ -146,6 +183,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
       try {
         const mppHandler = mpp.createMiddleware(toolName, toolConfig.price)
         mppHandler(req, res, () => {
+          spendingPolicy.record(callerId, parseFloat(toolConfig.price))
           earnings.record({
             tool: toolName,
             caller: callerId,

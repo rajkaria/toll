@@ -24,7 +24,7 @@ export function SiteFooter() {
             <div className="flex flex-col gap-2">
               <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Dashboard</Link>
               <Link href="/demo" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Live Demo</Link>
-              <Link href="/tools" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Tool Marketplace</Link>
+              <Link href="/tools" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Available Tools</Link>
             </div>
           </div>
 

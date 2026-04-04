@@ -16,6 +16,20 @@ const ToolConfigSchema = z.object({
     .optional(),
 })
 
+const SpendingPolicySchema = z.object({
+  maxPerCall: z.string().optional(),
+  maxDailyPerCaller: z.string().optional(),
+  maxDailyGlobal: z.string().optional(),
+  allowedCallers: z.array(z.string()).optional(),
+  blockedCallers: z.array(z.string()).optional(),
+}).optional()
+
+const ApiKeySchema = z.record(z.string(), z.object({
+  name: z.string(),
+  allowedTools: z.array(z.string()).optional(),
+  maxDailySpend: z.string().optional(),
+})).optional()
+
 const TollConfigSchema = z.object({
   network: z.enum(["testnet", "mainnet"]),
   payTo: z.string().min(56, "payTo must be a valid Stellar address"),
@@ -28,6 +42,8 @@ const TollConfigSchema = z.object({
     })
     .optional(),
   dataDir: z.string().optional(),
+  spendingPolicy: SpendingPolicySchema,
+  apiKeys: ApiKeySchema,
 })
 
 export function validateConfig(raw: unknown): TollConfig {

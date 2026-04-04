@@ -31,19 +31,13 @@ export class MPPVerifier {
     const handler: RequestHandler = async (req, res, next) => {
       const modules = await getMppModules()
 
-      // Graceful fallback: if MPP not available, pass through with warning
+      // Fail closed: if MPP SDK not available, reject the request
       if (!modules) {
-        console.warn(
-          `[Toll] MPP SDK not available. Tool '${tool}' serving without payment gate.`
-        )
-        return next()
+        throw new Error(`MPP SDK not available — cannot verify payment for tool '${tool}'`)
       }
 
       if (!self.secretKey) {
-        console.warn(
-          `[Toll] TOLL_SERVER_SECRET not set. MPP tool '${tool}' serving without payment gate.`
-        )
-        return next()
+        throw new Error(`TOLL_SERVER_SECRET not set — cannot verify MPP payment for tool '${tool}'`)
       }
 
       const { Mppx, stellar } = modules

@@ -20,6 +20,20 @@ export interface TollConfig {
     enabled: boolean
   }
   dataDir?: string // path to SQLite dir, default ~/.toll
+  /** Spending policies — Toll's trust primitive */
+  spendingPolicy?: {
+    maxPerCall?: string // max USDC per single call
+    maxDailyPerCaller?: string // max USDC per caller per day
+    maxDailyGlobal?: string // max USDC total per day
+    allowedCallers?: string[] // Stellar addresses allowed
+    blockedCallers?: string[] // Stellar addresses blocked
+  }
+  /** API key authentication for caller identification */
+  apiKeys?: Record<string, {
+    name: string
+    allowedTools?: string[] // restrict to specific tools
+    maxDailySpend?: string // per-key budget override
+  }>
 }
 
 export interface PaymentRequired {

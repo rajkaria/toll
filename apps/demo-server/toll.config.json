@@ -26,6 +26,11 @@
       "description": "Compare two products side-by-side ($0.05 USDC per call, paid via MPP)"
     }
   },
+  "spendingPolicy": {
+    "maxPerCall": "0.10",
+    "maxDailyPerCaller": "1.00",
+    "maxDailyGlobal": "10.00"
+  },
   "mpp": {
     "enabled": true
   }
