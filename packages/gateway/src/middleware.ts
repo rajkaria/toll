@@ -162,37 +162,55 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
     }
 
     if (protocol === "mpp") {
-      const authHeader = req.headers["authorization"] as string | undefined
-
-      if (!authHeader?.startsWith("Payment ")) {
-        res.status(402)
-          .set("WWW-Authenticate", `Payment realm="Toll MPP", asset="${toolConfig.currency}", amount="${toolConfig.price}", network="${config.network}", payTo="${config.payTo}"`)
-          .json({
-            error: "MPP payment required",
-            protocol: "mpp",
-            tool: toolName,
-            price: toolConfig.price,
-            currency: toolConfig.currency,
-            payTo: config.payTo,
-            network: config.network,
-          })
-        return
-      }
-
-      // If Authorization: Payment header present, attempt verification via MPP
+      // Use the new MPP verifier that handles Fetch API conversion internally
       try {
-        const mppHandler = mpp.createMiddleware(toolName, toolConfig.price)
-        mppHandler(req, res, () => {
-          spendingPolicy.record(callerId, parseFloat(toolConfig.price))
-          earnings.record({
-            tool: toolName,
-            caller: callerId,
-            amountUsdc: parseFloat(toolConfig.price),
-            protocol: "mpp",
-            txHash: null,
-          })
-          next()
+        const result = await mpp.handleCharge(
+          { headers: req.headers as Record<string, string | string[] | undefined>, method: req.method, url: req.url, protocol: req.protocol },
+          toolName,
+          toolConfig.price
+        )
+
+        if (!result.paid) {
+          // Return 402 with MPP challenge
+          if (result.challenge) {
+            // Forward the SDK's challenge response headers
+            const challengeHeaders: Record<string, string> = {}
+            result.challenge.headers.forEach((val: string, key: string) => {
+              challengeHeaders[key] = val
+            })
+            const body = await result.challenge.text()
+            res.status(402)
+            for (const [k, v] of Object.entries(challengeHeaders)) {
+              res.set(k, v)
+            }
+            res.send(body)
+          } else {
+            // Fallback 402 if no challenge from SDK
+            res.status(402)
+              .set("WWW-Authenticate", `Payment realm="Toll MPP", asset="${toolConfig.currency}", amount="${toolConfig.price}", network="${config.network}", payTo="${config.payTo}"`)
+              .json({
+                error: result.error ?? "MPP payment required",
+                protocol: "mpp",
+                tool: toolName,
+                price: toolConfig.price,
+                currency: toolConfig.currency,
+                payTo: config.payTo,
+                network: config.network,
+              })
+          }
+          return
+        }
+
+        // Payment verified — record and continue
+        spendingPolicy.record(callerId, parseFloat(toolConfig.price))
+        earnings.record({
+          tool: toolName,
+          caller: callerId,
+          amountUsdc: parseFloat(toolConfig.price),
+          protocol: "mpp",
+          txHash: null,
         })
+        next()
       } catch (err) {
         console.error(`[Toll] MPP verification failed for tool '${toolName}':`, err)
         res.status(402).json({

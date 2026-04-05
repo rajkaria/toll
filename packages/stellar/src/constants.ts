@@ -1,10 +1,10 @@
-// Stellar testnet USDC Soroban Asset Contract address
+// Stellar USDC Soroban Asset Contract addresses
+// These match @stellar/mpp SDK constants for cross-package compatibility
 export const USDC_SAC_TESTNET =
-  "CBIELTK6YBZJU5UP2WWQEQPMBLOP6DE2MDGJYXU5WZXMGN5NQSRPDNX"
+  "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
 
-// Stellar mainnet USDC SAC
 export const USDC_SAC_MAINNET =
-  "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7EJJUD"
+  "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI"
 
 // USDC has 7 decimal places on Stellar
 export const USDC_DECIMALS = 7

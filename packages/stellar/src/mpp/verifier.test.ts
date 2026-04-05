@@ -5,17 +5,33 @@ import type { TollConfig } from "../types.js"
 const mockConfig: TollConfig = {
   network: "testnet",
   payTo: "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  facilitatorUrl: "http://localhost:3001",
+  facilitatorUrl: "https://x402.org/facilitator",
   defaultPaymentMode: "mpp",
   tools: {},
   mpp: { enabled: true },
 }
 
 describe("MPPVerifier", () => {
-  it("creates middleware function for a tool+price", () => {
-    const v = new MPPVerifier(mockConfig)
-    const middleware = v.createMiddleware("compare_products", "0.05")
-    expect(typeof middleware).toBe("function")
-    expect(middleware.length).toBe(3) // (req, res, next)
+  it("constructs with config and secret key", () => {
+    const v = new MPPVerifier(mockConfig, "SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    expect(v).toBeDefined()
+  })
+
+  it("throws when secret key is missing and handleCharge called", async () => {
+    const v = new MPPVerifier(mockConfig) // no secret key, no env var
+    const originalEnv = process.env.TOLL_SERVER_SECRET
+    delete process.env.TOLL_SERVER_SECRET
+
+    const result = await v.handleCharge(
+      { headers: {}, method: "POST", url: "/mcp", protocol: "http" },
+      "test_tool",
+      "0.05"
+    ).catch((err) => ({ paid: false, error: String(err) }))
+
+    expect(result.paid).toBe(false)
+    expect(result.error).toContain("TOLL_SERVER_SECRET")
+
+    // Restore
+    if (originalEnv) process.env.TOLL_SERVER_SECRET = originalEnv
   })
 })
