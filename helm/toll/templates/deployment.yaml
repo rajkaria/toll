@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-toll
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: toll
+  template:
+    metadata:
+      labels:
+        app: toll
+    spec:
+      containers:
+        - name: toll
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.env.PORT }}"
+            - name: TOLL_DATA_DIR
+              value: "{{ .Values.env.TOLL_DATA_DIR }}"
+            - name: X402_FACILITATOR_URL
+              value: "{{ .Values.env.X402_FACILITATOR_URL }}"
+            - name: TOLL_SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: server-secret
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
