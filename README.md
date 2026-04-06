@@ -1,104 +1,123 @@
-# Toll — MCP Monetization Gateway for Stellar
+# Toll — The Agent Revenue Protocol for Stellar
 
-> Toll is a payment gateway that lets MCP (Model Context Protocol) server developers charge AI agents for tool usage using **x402** and **MPP** on **Stellar**.
+> Toll is a payment gateway that lets MCP (Model Context Protocol) servers charge AI agents for tool usage using **x402** and **MPP** on **Stellar** — with spending policies, session tokens, dynamic pricing, and real-time analytics.
 
-Built for the [Stellar Hacks: Agents](https://stellar.org) hackathon — April 2026.
+Built for the [Stellar Hacks: Agents](https://dorahacks.io/hackathon/stellar-agents-x402-stripe-mpp) hackathon.
+
+**Live:** [tollpay.xyz](https://tollpay.xyz) · **Standard:** [SAPS Specification](specs/SAPS.md)
 
 ---
 
-## What is this?
-
-MCP servers expose tools to AI agents. Toll sits in front of your MCP server and enforces micropayments before tool calls execute — using Stellar's programmable payment protocols.
+## Architecture
 
 ```
 AI Agent  →  POST /mcp  →  Toll Gateway  →  MCP Server
                 │                │
+                │   [SpendingPolicy check]
                 │   [402 + PaymentRequired]
                 │◄───────────────┘
                 │
-                │   [payment-signature header]
+                │   [payment-signature / Authorization: Payment]
                 ↓
-              Stellar Testnet (USDC)
+              Stellar Testnet (USDC / XLM)
 ```
 
-**Two payment protocols supported:**
-- **x402** — HTTP 402 payment required header, Stellar transaction signed by agent, verified on-chain
-- **MPP (Machine Payments Protocol)** — `WWW-Authenticate: Payment` header, Stellar smart contract channel
+**Five composable primitives:**
+
+| Primitive | Purpose |
+|-----------|---------|
+| **PaymentGate** | Express middleware — x402 + MPP dual-protocol gating |
+| **SpendingPolicy** | Budget caps, daily limits, caller allowlists |
+| **EarningsLedger** | SQLite tracking with tamper-evident audit log |
+| **ProtocolBridge** | x402 per-call + MPP session-based settlement |
+| **ConfigDSL** | Declarative JSON for tools, prices, tiers, sessions |
 
 ---
 
-## Monorepo Structure
+## Packages
 
 ```
 toll/
 ├── packages/
-│   ├── stellar/          @toll/stellar  — x402 verifier, MPP verifier, EarningsTracker
-│   └── gateway/          @toll/gateway  — tollMiddleware, withToll, config, RateLimiter
+│   ├── stellar/        @toll/stellar   — Verifiers, earnings, auth, audit, analytics, assets
+│   ├── gateway/        @toll/gateway   — Middleware, pricing, sessions, health, metrics, webhooks
+│   ├── sdk/            @toll/sdk       — Agent-side client (TollClient, TollAggregator)
+│   ├── cli/            @toll/cli       — Developer CLI (toll init, toll status)
+│   └── contracts/      @toll/contracts — Soroban contract interfaces (escrow, revenue share)
 ├── apps/
-│   ├── demo-server/      Watchdog Lite MCP server (4 tools, real Claude API)
-│   └── dashboard/        Next.js 15 earnings dashboard
-└── scripts/
-    ├── demo-agent.ts     CLI agent that pays for tool calls
-    └── setup-wallet.ts   Testnet wallet setup + Friendbot funding
+│   ├── demo-server/    Watchdog Lite — 4 monetized MCP tools
+│   └── dashboard/      Next.js 15 earnings dashboard at tollpay.xyz
+├── scripts/            Demo agent + wallet setup
+├── specs/              SAPS specification
+├── helm/               Kubernetes Helm chart
+├── Dockerfile          Container build
+└── docker-compose.yml  Full stack with Redis
 ```
 
 ---
 
 ## Quick Start
 
-### 1. Install dependencies
-
 ```bash
+# 1. Install
 pnpm install
-```
 
-### 2. Set up Stellar testnet wallets
-
-```bash
+# 2. Set up testnet wallets
 pnpm --filter toll-scripts exec tsx setup-wallet.ts
-```
 
-This generates two keypairs (server + agent), funds them via Friendbot, and prints the configuration.
+# 3. Configure (or use CLI)
+npx @toll/cli init
 
-### 3. Configure the demo server
-
-Edit `apps/demo-server/toll.config.json`:
-```json
-{
-  "payTo": "G<your-server-public-key>"
-}
-```
-
-Create `apps/demo-server/.env`:
-```
-PORT=3002
-TOLL_SERVER_SECRET=S<your-server-secret>
-TOLL_SERVER_ADDRESS=G<your-server-public>
-ANTHROPIC_API_KEY=sk-ant-...
-TOLL_DATA_DIR=~/.toll
-X402_FACILITATOR_URL=https://x402.org/facilitator
-```
-
-### 4. Start the demo server
-
-```bash
+# 4. Start the demo server
 pnpm --filter demo-server dev
-```
 
-### 5. Start the earnings dashboard
-
-```bash
+# 5. Start the dashboard
 pnpm --filter dashboard dev
+
+# 6. Run the demo agent
+AGENT_SECRET_KEY=S... pnpm --filter toll-scripts exec tsx demo-agent.ts
 ```
 
-Open [http://localhost:3003](http://localhost:3003)
+---
 
-### 6. Run the demo agent
+## Features (30 total)
 
-```bash
-export AGENT_SECRET_KEY=S<agent-secret-key>
-pnpm --filter toll-scripts exec tsx demo-agent.ts
-```
+### Payment & Security
+- **x402 + MPP** dual-protocol settlement on Stellar
+- **Replay protection** — signature deduplication with TTL
+- **Payment validation** — amount/slippage checking on settle
+- **402 rate limiting** — anti-enumeration with exponential backoff
+- **Input sanitization** — size limits, HTML strip, prototype pollution prevention
+- **Tamper-evident audit log** — SHA-256 hash chain in SQLite
+- **Stellar keypair authentication** — challenge-response, not just IP/API key
+
+### Pricing & Business
+- **Dynamic pricing** — time-of-day, demand-based, custom rules
+- **Tiered pricing** — volume discounts (first 10 free, then $0.005, etc.)
+- **A/B price testing** — deterministic variant assignment per caller
+- **Bundle pricing** — multi-tool packs (pay once for N calls)
+- **Pre-funded sessions** — pay upfront, draw down per call
+- **Auto-negotiation** — agents propose price, server counters
+- **Invoices & receipts** — with Stellar Expert links
+
+### Infrastructure
+- **Structured logging** — JSON with correlation IDs
+- **Prometheus metrics** — `/metrics` endpoint
+- **Health endpoints** — `/health`, `/health/ready`, `/health/tools`
+- **Cost estimation** — `POST /cost` before committing
+- **Pluggable state store** — memory (default) or Redis
+- **Secrets rotation** — dual-key grace period
+- **Webhooks** — payment.received, payment.failed, etc.
+- **Docker + Helm** — production deployment stack
+
+### SDK & Ecosystem
+- **@toll/sdk** — TollClient for agents (auto-pay, budget tracking)
+- **Multi-server aggregation** — TollAggregator routes across servers
+- **CLI scaffolding** — `toll init`, `toll status`
+- **Multi-asset support** — USDC, XLM, EURC, custom assets
+- **Marketplace manifest** — `/registry/manifest` for tool discovery
+- **Soroban contracts** — escrow, revenue share (interface + mock)
+- **SAPS specification** — Stellar Agent Payment Standard
 
 ---
 
@@ -107,100 +126,107 @@ pnpm --filter toll-scripts exec tsx demo-agent.ts
 | Tool | Price | Protocol | Description |
 |------|-------|----------|-------------|
 | `health_check` | FREE | — | Server status and version |
-| `search_competitors` | $0.01 USDC | x402 | Competitor intelligence database |
-| `analyze_sentiment` | $0.02 USDC | x402 | Sentiment analysis via Claude AI |
-| `compare_products` | $0.05 USDC | MPP | Side-by-side product comparison |
+| `search_competitors` | $0.01 USDC | x402 | Competitor intelligence |
+| `analyze_sentiment` | $0.02 USDC | x402 | AI sentiment via Claude |
+| `compare_products` | $0.05 USDC | MPP | Product comparison |
 
 ---
 
-## Payment Flow
-
-### x402 (HTTP 402)
-
-```
-1. Agent POSTs tool call → Toll returns 402 with PaymentRequired JSON
-2. Agent extracts requirements, signs Stellar transaction
-3. Agent retries with payment-signature header (base64 tx)
-4. Toll POSTs to facilitator /settle → verifies on-chain
-5. Tool executes, earnings recorded
-```
-
-### MPP (Machine Payments Protocol)
-
-```
-1. Agent POSTs tool call → Toll returns 402 with MPP challenge
-2. Agent signs payment via @stellar/mpp channel
-3. Agent retries with Authorization: Payment header
-4. Toll verifies payment via mppx middleware
-5. Tool executes, earnings recorded
-```
-
----
-
-## Integration (Add Toll to Your Server)
+## Agent SDK Usage
 
 ```typescript
-import express from "express"
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
-import { tollMiddleware, loadConfig, withToll } from "@toll/gateway"
+import { TollClient } from "@toll/sdk"
 
-const config = loadConfig("./toll.config.json")
-const app = express()
-
-app.use(express.json())
-app.use("/mcp", tollMiddleware(config))   // payment enforcement
-
-const mcpServer = createMyMcpServer()
-withToll(mcpServer, config)               // fallback handlers for unpaid calls
-
-app.post("/mcp", async (req, res) => {
-  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
-  await mcpServer.connect(transport)
-  await transport.handleRequest(req, res, req.body)
+const toll = new TollClient({
+  serverUrl: "http://localhost:3002",
+  secretKey: "S...",
+  budget: { maxPerCall: "0.10", maxDaily: "5.00" },
 })
+
+// Auto-handles 402 → pay → retry
+const result = await toll.callTool("search_competitors", { query: "CRM tools" })
+console.log(result.data) // tool output
+console.log(toll.getSpending()) // { totalSpent: 0.01, callCount: 1, ... }
 ```
 
-`toll.config.json`:
+---
+
+## Configuration
+
 ```json
 {
   "network": "testnet",
   "payTo": "G...",
+  "facilitatorUrl": "https://x402.org/facilitator",
   "defaultPaymentMode": "x402",
   "tools": {
-    "my_free_tool":   { "price": "0",    "currency": "USDC" },
-    "my_paid_tool":   { "price": "0.05", "currency": "USDC" },
-    "my_mpp_tool":    { "price": "0.10", "currency": "USDC", "paymentMode": "mpp" }
+    "my_free_tool": { "price": "0", "currency": "USDC" },
+    "my_paid_tool": { "price": "0.05", "currency": "USDC" }
+  },
+  "spendingPolicy": {
+    "maxPerCall": "0.10",
+    "maxDailyPerCaller": "1.00",
+    "maxDailyGlobal": "10.00"
   }
 }
 ```
+
+See [docs](https://tollpay.xyz/docs) for full configuration reference with all 30+ optional fields.
 
 ---
 
 ## Tests
 
 ```bash
-# All packages
-pnpm test
+pnpm -r test           # 38 tests across 4 packages
+```
 
-# Individual
-pnpm --filter @toll/stellar test      # 8 tests
-pnpm --filter @toll/gateway test      # 15 tests
-pnpm --filter demo-server test        # 10 integration tests
+| Package | Tests |
+|---------|-------|
+| @toll/stellar | 9 |
+| @toll/gateway | 16 |
+| @toll/sdk | 3 |
+| demo-server | 10 |
+
+---
+
+## Deployment
+
+### Docker
+
+```bash
+docker-compose up -d
+```
+
+### Helm
+
+```bash
+helm install toll helm/toll --set env.TOLL_SERVER_SECRET=S...
+```
+
+### Vercel (Dashboard)
+
+```bash
+cd apps/dashboard && npx vercel --prod
 ```
 
 ---
 
 ## Tech Stack
 
-- **Stellar** — USDC payments, Soroban smart contracts
+- **Stellar** — USDC/XLM settlement, Soroban smart contracts
 - **x402** — `@x402/core@2.8.0`, `@x402/stellar@2.8.0`
 - **MPP** — `@stellar/mpp@0.2.1`, `mppx@0.5.0`
 - **MCP SDK** — `@modelcontextprotocol/sdk@1.29.0`
-- **Gateway** — Express 4, TypeScript, Zod, SQLite (better-sqlite3)
-- **Dashboard** — Next.js 15, Tailwind CSS v4, React 19
+- **Server** — Express 4, TypeScript strict, Zod, SQLite
+- **Dashboard** — Next.js 15, React 19, Tailwind CSS 4
 - **Monorepo** — pnpm workspaces + Turborepo
 
 ---
+
+## Standard
+
+Toll implements the [SAPS (Stellar Agent Payment Standard)](specs/SAPS.md) — a proposed protocol for how AI agents discover, negotiate, and pay for MCP tools on Stellar.
 
 ## License
 
