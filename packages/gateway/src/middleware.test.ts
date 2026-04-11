@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { tollMiddleware } from "./middleware.js"
-import type { TollConfig } from "@toll/stellar"
+import type { TollConfig } from "@rajkaria123/toll-stellar"
 
-// Mock @toll/stellar modules
-vi.mock("@toll/stellar", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@toll/stellar")>()
+// Mock @rajkaria123/toll-stellar modules
+vi.mock("@rajkaria123/toll-stellar", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@rajkaria123/toll-stellar")>()
   return {
     ...actual,
     X402Verifier: vi.fn().mockImplementation(() => ({

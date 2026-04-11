@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest"
 import { withToll } from "./withToll.js"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
-import type { TollConfig } from "@toll/stellar"
+import type { TollConfig } from "@rajkaria123/toll-stellar"
 
 const config: TollConfig = {
   network: "testnet",

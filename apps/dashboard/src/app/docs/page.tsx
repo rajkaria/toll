@@ -115,7 +115,7 @@ export default function DocsPage() {
         <SectionTitle>Quick Start</SectionTitle>
 
         <SubTitle>1. Install packages</SubTitle>
-        <CodeBlock code="npm install @toll/gateway @toll/stellar express @modelcontextprotocol/sdk" language="bash" />
+        <CodeBlock code="npm install @rajkaria123/toll-gateway @rajkaria123/toll-stellar express @modelcontextprotocol/sdk" language="bash" />
 
         <SubTitle>2. Create toll.config.json</SubTitle>
         <Prose>
@@ -305,23 +305,23 @@ X402_FACILITATOR_URL=https://x402-facilitator.stellar.org`} language="bash" file
         {[
           {
             sig: "tollMiddleware(config: TollConfig): RequestHandler",
-            pkg: "@toll/gateway",
+            pkg: "@rajkaria123/toll-gateway",
             desc: "Express middleware that intercepts MCP tools/call requests and enforces payment. Place before your StreamableHTTPServerTransport handler.",
-            example: `import { tollMiddleware, loadConfig } from "@toll/gateway"
+            example: `import { tollMiddleware, loadConfig } from "@rajkaria123/toll-gateway"
 
 const config = loadConfig("./toll.config.json")
 app.use("/mcp", tollMiddleware(config))`,
           },
           {
             sig: "withToll(server: McpServer, config: TollConfig): McpServer",
-            pkg: "@toll/gateway",
+            pkg: "@rajkaria123/toll-gateway",
             desc: "Wraps MCP tool handlers for stdio transport. Paid tools return a JSON-RPC error with payment info instead of executing. Use alongside tollMiddleware for HTTP.",
             example: `const mcpServer = createMcpServer()
 withToll(mcpServer, config)`,
           },
           {
             sig: "loadConfig(path: string): TollConfig",
-            pkg: "@toll/gateway",
+            pkg: "@rajkaria123/toll-gateway",
             desc: "Reads and validates a toll.config.json file. Throws with descriptive errors if validation fails.",
             example: `const config = loadConfig("./toll.config.json")
 console.log(config.payTo)  // G...
@@ -329,7 +329,7 @@ console.log(config.tools)  // { tool_name: { price, currency, ... } }`,
           },
           {
             sig: "new EarningsTracker(dataDir?: string)",
-            pkg: "@toll/stellar",
+            pkg: "@rajkaria123/toll-stellar",
             desc: "SQLite-backed tracker for payment records. Auto-creates the database and schema. Default directory: ~/.toll",
             example: `const tracker = new EarningsTracker("./data")
 
@@ -352,7 +352,7 @@ tracker.close() // always close when done`,
           },
           {
             sig: "new X402Verifier(config: TollConfig)",
-            pkg: "@toll/stellar",
+            pkg: "@rajkaria123/toll-stellar",
             desc: "Builds x402 PaymentRequired responses and verifies payments via the facilitator /settle endpoint.",
             example: `const verifier = new X402Verifier(config)
 
@@ -491,8 +491,8 @@ cd apps/dashboard && npx vercel --prod`} language="bash" />
 pnpm -r test
 
 # Individual packages
-pnpm --filter @toll/stellar test    # 8 tests
-pnpm --filter @toll/gateway test    # 15 tests
+pnpm --filter @rajkaria123/toll-stellar test    # 8 tests
+pnpm --filter @rajkaria123/toll-gateway test    # 15 tests
 pnpm --filter demo-server test      # 10 integration tests`} language="bash" />
       </section>
     </main>

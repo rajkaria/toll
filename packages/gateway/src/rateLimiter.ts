@@ -1,4 +1,4 @@
-import type { TollToolConfig } from "@toll/stellar"
+import type { TollToolConfig } from "@rajkaria123/toll-stellar"
 
 interface UsageEntry {
   count: number

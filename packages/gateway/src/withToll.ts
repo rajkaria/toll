@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import type { TollConfig } from "@toll/stellar"
+import type { TollConfig } from "@rajkaria123/toll-stellar"
 import { isFree } from "./config.js"
 
 interface RegisteredTool {

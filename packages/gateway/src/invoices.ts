@@ -1,4 +1,4 @@
-import type { EarningsTracker } from "@toll/stellar"
+import type { EarningsTracker } from "@rajkaria123/toll-stellar"
 
 export interface InvoiceConfig {
   enabled?: boolean

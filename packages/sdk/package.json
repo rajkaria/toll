@@ -1,5 +1,5 @@
 {
-  "name": "@toll/sdk",
+  "name": "@rajkaria123/toll-sdk",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",

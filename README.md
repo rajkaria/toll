@@ -9,13 +9,13 @@
 ## Install
 
 ```bash
-npm install @toll/gateway
+npm install @rajkaria123/toll-gateway
 ```
 
 ## Add a paywall in 3 lines
 
 ```typescript
-import { tollMiddleware } from "@toll/gateway"
+import { tollMiddleware } from "@rajkaria123/toll-gateway"
 
 app.use("/mcp", tollMiddleware({
   payTo: "G...YOUR_STELLAR_ADDRESS",
@@ -97,7 +97,7 @@ AI Agent → POST /mcp → Toll Paywall → 402 Payment Required
 For agents that need to pay for tools automatically:
 
 ```typescript
-import { TollClient } from "@toll/sdk"
+import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
   serverUrl: "https://api.tollpay.xyz",
@@ -112,11 +112,10 @@ const result = await toll.callTool("search_competitors", { query: "CRM" })
 
 | Package | Purpose |
 |---------|---------|
-| `@toll/gateway` | Express paywall — intercepts MCP calls, handles 402/payment/verification |
-| `@toll/stellar` | Stellar verifiers (x402 + MPP), earnings tracking, audit log |
-| `@toll/sdk` | Agent-side client — auto-handles 402, signs payments, tracks budget |
-| `@toll/cli` | Developer CLI — `toll init`, `toll status` |
-| `@toll/contracts` | Soroban smart contract interfaces (escrow, revenue share) |
+| `@rajkaria123/toll-gateway` | Express paywall — intercepts MCP calls, handles 402/payment/verification |
+| `@rajkaria123/toll-stellar` | Stellar verifiers (x402 + MPP), earnings tracking, audit log |
+| `@rajkaria123/toll-sdk` | Agent-side client — auto-handles 402, signs payments, tracks budget |
+| `@rajkaria123/toll-cli` | Developer CLI — `toll init`, `toll status` |
 
 ## Tech Stack
 

@@ -1,7 +1,7 @@
 import "dotenv/config"
 import express from "express"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
-import { tollMiddleware, loadConfig, withToll } from "@toll/gateway"
+import { tollMiddleware, loadConfig, withToll } from "@rajkaria123/toll-gateway"
 import { createMcpServer } from "./server.js"
 import path from "path"
 import { fileURLToPath } from "url"

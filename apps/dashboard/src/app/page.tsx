@@ -187,7 +187,7 @@ export default function LandingPage() {
         <div className="relative max-w-2xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">You built an MCP server.<br />Now get paid for it.</h2>
           <p className="text-gray-500 mb-10 text-sm leading-relaxed">
-            npm install @toll/gateway. Three lines. Mainnet USDC.
+            npm install @rajkaria123/toll-gateway. Three lines. Mainnet USDC.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/docs" className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5">Get Started</Link>

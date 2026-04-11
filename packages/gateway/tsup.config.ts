@@ -6,5 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ["express", "@modelcontextprotocol/sdk", "@toll/stellar", "better-sqlite3"],
+  external: ["express", "@modelcontextprotocol/sdk", "@rajkaria123/toll-stellar", "better-sqlite3"],
 })

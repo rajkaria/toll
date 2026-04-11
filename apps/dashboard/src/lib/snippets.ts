@@ -1,4 +1,4 @@
-export const HERO_SNIPPET = `import { tollMiddleware } from "@toll/gateway"
+export const HERO_SNIPPET = `import { tollMiddleware } from "@rajkaria123/toll-gateway"
 
 app.use("/mcp", tollMiddleware({
   payTo: "G...YOUR_STELLAR_ADDRESS",
@@ -11,7 +11,7 @@ app.use("/mcp", tollMiddleware({
 
 export const QUICK_START_SNIPPET = `import express from "express"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
-import { tollMiddleware, loadConfig, createHealthRoutes } from "@toll/gateway"
+import { tollMiddleware, loadConfig, createHealthRoutes } from "@rajkaria123/toll-gateway"
 
 const config = loadConfig("./toll.config.json")
 const app = express()
@@ -48,7 +48,7 @@ export const CONNECT_SNIPPET = `// Claude Desktop / any MCP client config
   }
 }`
 
-export const SDK_SNIPPET = `import { TollClient } from "@toll/sdk"
+export const SDK_SNIPPET = `import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
   serverUrl: "https://api.tollpay.xyz",
@@ -62,7 +62,7 @@ console.log(result.data)          // tool output
 console.log(toll.getSpending())   // { totalSpent: 0.01, ... }`
 
 export const CLI_SNIPPET = `# Initialize a new Toll project
-npx @toll/cli init
+npx @rajkaria123/toll-cli init
 
 # Check configuration and pricing
-npx @toll/cli status`
+npx @rajkaria123/toll-cli status`

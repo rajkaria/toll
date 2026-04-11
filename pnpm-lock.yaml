@@ -60,10 +60,10 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.29.0(zod@3.25.76)
-      '@toll/gateway':
+      '@rajkaria123/toll-gateway':
         specifier: workspace:*
         version: link:../../packages/gateway
-      '@toll/stellar':
+      '@rajkaria123/toll-stellar':
         specifier: workspace:*
         version: link:../../packages/stellar
       cors:
@@ -137,7 +137,7 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.29.0(zod@3.25.76)
-      '@toll/stellar':
+      '@rajkaria123/toll-stellar':
         specifier: workspace:*
         version: link:../stellar
       express:
@@ -233,12 +233,12 @@ importers:
 
   scripts:
     dependencies:
+      '@rajkaria123/toll-stellar':
+        specifier: workspace:*
+        version: link:../packages/stellar
       '@stellar/stellar-sdk':
         specifier: ^14.6.1
         version: 14.6.1
-      '@toll/stellar':
-        specifier: workspace:*
-        version: link:../packages/stellar
       '@x402/core':
         specifier: ^2.8.0
         version: 2.8.0

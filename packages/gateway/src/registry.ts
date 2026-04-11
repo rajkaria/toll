@@ -1,4 +1,4 @@
-import type { TollConfig, EarningsTracker } from "@toll/stellar"
+import type { TollConfig, EarningsTracker } from "@rajkaria123/toll-stellar"
 
 export interface RegistryConfig {
   enabled?: boolean

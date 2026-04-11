@@ -4,7 +4,7 @@ import {
   MPPVerifier,
   EarningsTracker,
   type TollConfig,
-} from "@toll/stellar"
+} from "@rajkaria123/toll-stellar"
 import { RateLimiter } from "./rateLimiter.js"
 import { isFree } from "./config.js"
 import { SpendingPolicy } from "./spendingPolicy.js"

@@ -1,6 +1,6 @@
 import { z } from "zod"
 import fs from "node:fs"
-import type { TollConfig } from "@toll/stellar"
+import type { TollConfig } from "@rajkaria123/toll-stellar"
 
 const ToolConfigSchema = z.object({
   price: z.string().regex(/^\d+(\.\d+)?$/, "Price must be a decimal string like '0.01'"),

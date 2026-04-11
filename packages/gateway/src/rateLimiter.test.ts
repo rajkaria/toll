@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { RateLimiter } from "./rateLimiter.js"
-import type { TollToolConfig } from "@toll/stellar"
+import type { TollToolConfig } from "@rajkaria123/toll-stellar"
 
 const freeWithLimit: TollToolConfig = {
   price: "0",

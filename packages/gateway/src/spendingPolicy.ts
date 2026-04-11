@@ -1,4 +1,4 @@
-import type { TollConfig } from "@toll/stellar"
+import type { TollConfig } from "@rajkaria123/toll-stellar"
 
 /**
  * SpendingPolicy — Toll's trust primitive.
