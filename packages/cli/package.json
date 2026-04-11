@@ -11,7 +11,8 @@
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "commander": "^12.0.0"
+    "commander": "^12.0.0",
+    "@stellar/stellar-sdk": "^14.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

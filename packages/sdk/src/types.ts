@@ -7,6 +7,15 @@ export interface TollClientConfig {
   }
   sessionEnabled?: boolean
   autoRetry?: boolean // auto-retry on 402, default true
+  autoCreateWallet?: boolean // auto-create Stellar wallet if no secretKey, default true
+  network?: "mainnet" | "testnet" // Stellar network, default mainnet
+}
+
+export interface TollWallet {
+  publicKey: string
+  secretKey: string
+  createdAt: string
+  network: "mainnet" | "testnet"
 }
 
 export interface ToolCallResult {

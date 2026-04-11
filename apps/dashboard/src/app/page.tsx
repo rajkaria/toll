@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/shared/CodeBlock"
-import { BEFORE_SNIPPET, AFTER_SNIPPET, TOLL_CONFIG_SNIPPET } from "@/lib/snippets"
+import { BEFORE_SNIPPET, AFTER_SNIPPET, TOLL_CONFIG_SNIPPET, PROXY_SNIPPET, PROXY_CONFIG_SNIPPET, REGISTRY_SNIPPET } from "@/lib/snippets"
 
 /* ─── Live API Playground ─── */
 function ApiPlayground() {
@@ -400,6 +400,76 @@ export default function LandingPage() {
               Toll abstracts all blockchain internals. You don&apos;t configure wallets, sign transactions, or learn Soroban.
               You set prices in your config file. Toll and Stellar handle the rest.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Toll Proxy — Zero-Config Payments ── */}
+      <section id="proxy" className="py-24 px-6 border-t border-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest mb-3">For AI Agents</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+            Use paid tools without writing payment code
+          </h2>
+          <p className="text-gray-500 text-sm mb-10 max-w-2xl">
+            The Toll Proxy sits between your MCP client and any Toll-powered server.
+            It auto-creates a Stellar wallet, intercepts 402 responses, signs payments, and retries — all transparently.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-gray-400 text-xs font-medium mb-2">Start the proxy:</p>
+              <CodeBlock code={PROXY_SNIPPET} language="bash" />
+            </div>
+            <div>
+              <p className="text-gray-400 text-xs font-medium mb-2">Connect your MCP client:</p>
+              <CodeBlock code={PROXY_CONFIG_SNIPPET} language="json" />
+            </div>
+          </div>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="rounded-xl border border-gray-700/50 bg-gray-900/50 p-4 text-center">
+              <p className="text-2xl font-bold text-white mb-1">0</p>
+              <p className="text-gray-500 text-xs">lines of payment code</p>
+            </div>
+            <div className="rounded-xl border border-gray-700/50 bg-gray-900/50 p-4 text-center">
+              <p className="text-2xl font-bold text-emerald-400 mb-1">Auto</p>
+              <p className="text-gray-500 text-xs">wallet creation &amp; funding</p>
+            </div>
+            <div className="rounded-xl border border-gray-700/50 bg-gray-900/50 p-4 text-center">
+              <p className="text-2xl font-bold text-white mb-1">$5/day</p>
+              <p className="text-gray-500 text-xs">default budget limit</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Tool Registry ── */}
+      <section id="registry" className="py-24 px-6 border-t border-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest mb-3">Discovery</p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+            The directory for paid AI tools
+          </h2>
+          <p className="text-gray-500 text-sm mb-10 max-w-2xl">
+            Agents discover tools by capability and price. Developers register their servers with one command.
+            Quality scores help agents choose the best tools.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-gray-400 text-xs font-medium mb-2">Discover tools programmatically:</p>
+              <CodeBlock code={REGISTRY_SNIPPET} language="typescript" />
+            </div>
+            <div className="space-y-4">
+              <div className="rounded-xl border border-gray-700/50 bg-gray-900/50 p-4">
+                <p className="text-white font-semibold text-sm mb-1">For Server Developers</p>
+                <p className="text-gray-400 text-xs mb-3">Register your tools and let agents find you:</p>
+                <code className="text-emerald-400 text-xs font-mono">npx @rajkaria123/toll-cli register --url https://your-server.com/mcp</code>
+              </div>
+              <div className="rounded-xl border border-gray-700/50 bg-gray-900/50 p-4">
+                <p className="text-white font-semibold text-sm mb-1">For Agent Developers</p>
+                <p className="text-gray-400 text-xs mb-3">Browse available tools with quality scores and connect instantly.</p>
+                <Link href="/registry" className="text-emerald-400 text-xs hover:underline">Browse the Registry &rarr;</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

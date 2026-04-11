@@ -1,5 +1,6 @@
 import { Command } from "commander"
 import { initCommand } from "./commands/init.js"
+import { registerCommand } from "./commands/register.js"
 
 const program = new Command()
 
@@ -13,6 +14,12 @@ program
   .description("Initialize a new Toll configuration in the current directory")
   .option("-y, --yes", "Accept defaults without prompting")
   .action(initCommand)
+
+program
+  .command("register")
+  .description("Register your MCP server with the Toll Registry")
+  .option("-u, --url <url>", "Server URL (e.g. https://myserver.com/mcp)")
+  .action(registerCommand)
 
 program
   .command("status")

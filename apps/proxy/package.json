@@ -1,0 +1,30 @@
+{
+  "name": "@rajkaria123/toll-proxy",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "toll-proxy": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@rajkaria123/toll-sdk": "workspace:*",
+    "@stellar/stellar-sdk": "^14.0.0",
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

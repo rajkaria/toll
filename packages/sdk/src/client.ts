@@ -1,4 +1,5 @@
 import type { TollClientConfig, ToolCallResult, ServerManifest, SpendingReport, TollEventHandler, TollEventType } from "./types.js"
+import { WalletManager } from "./wallet.js"
 
 /**
  * TollClient — Agent-side SDK for calling monetized MCP tools.
@@ -19,9 +20,32 @@ export class TollClient {
   private x402Client: unknown = null
 
   constructor(config: TollClientConfig) {
-    this.config = { autoRetry: true, ...config }
+    this.config = { autoRetry: true, autoCreateWallet: true, ...config }
     this.spending = { total: 0, calls: 0, byTool: {} }
     this.dailyResetAt = this.todayEnd()
+
+    // Auto-create wallet if no secret key provided
+    if (!this.config.secretKey && this.config.autoCreateWallet) {
+      const walletMgr = new WalletManager()
+      const wallet = walletMgr.getOrCreate(this.config.network ?? "mainnet")
+      this.config.secretKey = wallet.secretKey
+    }
+  }
+
+  /** Get the wallet public key (Stellar G... address) */
+  getWalletAddress(): string | null {
+    if (!this.config.secretKey) return null
+    try {
+      const { Keypair } = require("@stellar/stellar-sdk") as typeof import("@stellar/stellar-sdk")
+      return Keypair.fromSecret(this.config.secretKey).publicKey()
+    } catch {
+      return null
+    }
+  }
+
+  /** Create a new Stellar wallet and return it */
+  static createWallet(network: "mainnet" | "testnet" = "mainnet") {
+    return new WalletManager().createWallet(network)
   }
 
   /** Call a monetized MCP tool */
@@ -129,7 +153,7 @@ export class TollClient {
         const network = (paymentRequired as { accepts?: Array<{ network?: string }> })?.accepts?.[0]?.network ?? "stellar:pubnet"
         const client = x402Client.fromConfig({
           schemes: [{
-            network,
+            network: network as `${string}:${string}`,
             client: stellarScheme,
           }],
         })

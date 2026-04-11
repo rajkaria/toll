@@ -1,10 +1,13 @@
 import { CodeBlock } from "@/components/shared/CodeBlock"
-import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET } from "@/lib/snippets"
+import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET, PROXY_SNIPPET, PROXY_CONFIG_SNIPPET, REGISTRY_SNIPPET, WALLET_SNIPPET } from "@/lib/snippets"
 
 const TOC = [
   { id: "quick-start", label: "Quick Start" },
   { id: "how-it-works", label: "How Toll Works" },
   { id: "configuration", label: "Configuration" },
+  { id: "toll-proxy", label: "Toll Proxy" },
+  { id: "toll-registry", label: "Tool Registry" },
+  { id: "wallet", label: "Wallet Management" },
   { id: "agent-sdk", label: "Agent SDK" },
   { id: "earnings", label: "Earnings & Dashboard" },
   { id: "security", label: "Security" },
@@ -284,6 +287,100 @@ export default function DocsPage() {
         <CodeBlock code={`"0.01"  USDC  →  100000   base units (stroops)
 "0.001" USDC  →  10000    base units
 "1.00"  USDC  →  10000000 base units`} language="text" />
+      </section>
+
+      <Divider />
+
+      {/* ── Toll Proxy ── */}
+      <Anchor id="toll-proxy" />
+      <section>
+        <SectionTitle>Toll Proxy</SectionTitle>
+        <Prose>
+          The Toll Proxy lets any MCP client (Claude Desktop, Cursor, etc.) use paid tools without payment code.
+          It sits between your client and the Toll-powered server, intercepting 402 responses, auto-signing USDC payments on Stellar, and retrying.
+        </Prose>
+
+        <SubTitle>Start the Proxy</SubTitle>
+        <CodeBlock code={PROXY_SNIPPET} language="bash" />
+
+        <SubTitle>Connect Your MCP Client</SubTitle>
+        <Prose>Add the proxy URL to your MCP client configuration:</Prose>
+        <CodeBlock code={PROXY_CONFIG_SNIPPET} language="json" />
+
+        <InfoBox title="Auto Wallet">
+          The proxy auto-creates a Stellar Ed25519 keypair at ~/.toll/wallet.json on first run.
+          Fund this wallet with USDC to start using paid tools. See the Fund page for options.
+        </InfoBox>
+
+        <SubTitle>Budget Controls</SubTitle>
+        <Prose>
+          The proxy enforces spending limits to prevent runaway costs:
+        </Prose>
+        <CodeBlock code={`--budget-daily 5.00    # Max $5 USDC per day (default)
+--budget-per-call 0.50  # Max $0.50 per individual call`} language="bash" />
+
+        <SubTitle>Self-Hosted vs Hosted</SubTitle>
+        <Prose>
+          Run the proxy locally with npx, or deploy it on Railway/Docker for always-on access.
+          The proxy is open source and designed to be self-hosted for full control over your wallet and budget.
+        </Prose>
+      </section>
+
+      <Divider />
+
+      {/* ── Tool Registry ── */}
+      <Anchor id="toll-registry" />
+      <section>
+        <SectionTitle>Tool Registry</SectionTitle>
+        <Prose>
+          The Toll Registry is a public directory where Toll-powered MCP servers register their tools
+          and agents discover them by capability, price, and quality score.
+        </Prose>
+
+        <SubTitle>Register Your Server</SubTitle>
+        <Prose>From your MCP server project directory (with toll.config.json):</Prose>
+        <CodeBlock code={`npx @rajkaria123/toll-cli register --url https://your-server.com/mcp`} language="bash" />
+        <Prose>
+          Registration is authenticated via Stellar keypair signature. The CLI fetches your server&apos;s tool manifest
+          and registers all tools with the registry.
+        </Prose>
+
+        <SubTitle>Discover Tools</SubTitle>
+        <Prose>Agents and developers can discover tools programmatically:</Prose>
+        <CodeBlock code={REGISTRY_SNIPPET} language="typescript" />
+
+        <SubTitle>Quality Scores</SubTitle>
+        <Prose>
+          Each tool has a quality score (0-100) based on uptime, success rate, latency, and usage volume.
+          The Toll Proxy automatically reports metrics to the registry.
+          Higher quality scores appear first in discovery results.
+        </Prose>
+      </section>
+
+      <Divider />
+
+      {/* ── Wallet Management ── */}
+      <Anchor id="wallet" />
+      <section>
+        <SectionTitle>Wallet Management</SectionTitle>
+        <Prose>
+          The Toll SDK auto-creates and manages Stellar Ed25519 keypairs for agents.
+          No manual wallet setup required.
+        </Prose>
+        <CodeBlock code={WALLET_SNIPPET} language="typescript" />
+
+        <SubTitle>Wallet Storage</SubTitle>
+        <Prose>
+          Wallets are stored at ~/.toll/wallet.json with 0600 file permissions (owner read/write only).
+          The file contains the Stellar public key and secret key.
+          Do not store large amounts — this is designed for micropayment budgets.
+        </Prose>
+
+        <SubTitle>Funding</SubTitle>
+        <Prose>
+          Fund your wallet with USDC on Stellar via LOBSTR, MoneyGram, or an exchange.
+          See the Fund page for step-by-step instructions.
+        </Prose>
       </section>
 
       <Divider />

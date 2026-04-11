@@ -219,14 +219,43 @@ Toll supports both payment protocols required by the Stellar agent ecosystem:
 
 Both protocols settle in USDC on Stellar mainnet. x402 is production-ready. MPP support is experimental and will be fully validated as the MPP SDK stabilizes.
 
+## Toll Proxy — Zero-Config Agent Payments
+
+MCP clients (Claude Desktop, Cursor) don't speak x402. The Toll Proxy bridges that gap:
+
+```bash
+# Start the proxy — auto-creates a Stellar wallet
+npx @rajkaria123/toll-proxy --target https://api.tollpay.xyz/mcp
+
+# Connect any MCP client
+# { "mcpServers": { "tools": { "url": "http://localhost:3010/mcp" } } }
+```
+
+The proxy intercepts 402 responses, auto-signs USDC payments on Stellar, retries, and returns results — all transparently. Budget controls prevent runaway spending ($5/day default).
+
+## Tool Registry — Agent Discovery
+
+Agents discover paid tools through the Toll Registry:
+
+```bash
+# Register your server
+npx @rajkaria123/toll-cli register --url https://your-server.com/mcp
+
+# Agents discover tools by capability and price
+# GET https://tollpay.xyz/api/registry/discover?q=search&maxPrice=0.05
+```
+
+Each tool has a quality score based on uptime, success rate, latency, and usage volume. Browse at [tollpay.xyz/registry](https://tollpay.xyz/registry).
+
 ## Packages
 
 | Package | What It Does |
 |---------|-------------|
 | [`@rajkaria123/toll-gateway`](https://www.npmjs.com/package/@rajkaria123/toll-gateway) | Express middleware — intercepts MCP calls, returns 402, verifies payment, tracks earnings |
 | [`@rajkaria123/toll-stellar`](https://www.npmjs.com/package/@rajkaria123/toll-stellar) | Stellar integration — x402 verifier, MPP verifier, earnings tracker (SQLite), constants |
-| [`@rajkaria123/toll-sdk`](https://www.npmjs.com/package/@rajkaria123/toll-sdk) | Agent SDK — auto-handles 402, signs payments, tracks budget, event system |
-| [`@rajkaria123/toll-cli`](https://www.npmjs.com/package/@rajkaria123/toll-cli) | Developer CLI — `toll init`, `toll status`, local testing |
+| [`@rajkaria123/toll-sdk`](https://www.npmjs.com/package/@rajkaria123/toll-sdk) | Agent SDK — auto-handles 402, signs payments, auto-wallet creation, budget tracking |
+| [`@rajkaria123/toll-cli`](https://www.npmjs.com/package/@rajkaria123/toll-cli) | Developer CLI — `toll init`, `toll status`, `toll register` |
+| `@rajkaria123/toll-proxy` | MCP proxy — auto-pays for tool calls, budget controls, quality metrics |
 
 All packages published on npm as v0.1.0.
 

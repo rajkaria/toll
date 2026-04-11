@@ -95,4 +95,43 @@ export const CLI_SNIPPET = `# Initialize a new Toll project
 npx @rajkaria123/toll-cli init
 
 # Check configuration and pricing
-npx @rajkaria123/toll-cli status`
+npx @rajkaria123/toll-cli status
+
+# Register your server in the Toll Registry
+npx @rajkaria123/toll-cli register --url https://your-server.com/mcp`
+
+export const PROXY_SNIPPET = `# Start the Toll Proxy — auto-creates a Stellar wallet
+npx @rajkaria123/toll-proxy --target https://api.tollpay.xyz/mcp
+
+# Or with custom budget limits
+npx @rajkaria123/toll-proxy \\
+  --target https://api.tollpay.xyz/mcp \\
+  --budget-daily 5.00 \\
+  --budget-per-call 0.50`
+
+export const PROXY_CONFIG_SNIPPET = `// Add to Claude Desktop / Cursor MCP config:
+{
+  "mcpServers": {
+    "my-paid-tools": {
+      "url": "http://localhost:3010/mcp?target=https://api.tollpay.xyz/mcp",
+      "transport": "streamable-http"
+    }
+  }
+}`
+
+export const REGISTRY_SNIPPET = `// Discover tools programmatically
+const resp = await fetch(
+  "https://tollpay.xyz/api/registry/discover?q=search&maxPrice=0.05"
+)
+const { tools } = await resp.json()
+// [{ name: "search_competitors", price: "0.01", server: { url: "..." }, ... }]`
+
+export const WALLET_SNIPPET = `import { WalletManager } from "@rajkaria123/toll-sdk"
+
+const wallet = new WalletManager()
+
+// Auto-creates ~/.toll/wallet.json with a Stellar Ed25519 keypair
+const { publicKey, secretKey } = wallet.getOrCreate("mainnet")
+
+// Get funding instructions
+console.log(wallet.fundingInstructions(publicKey))`
