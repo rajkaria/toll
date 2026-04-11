@@ -2,7 +2,7 @@
 
 **You built an MCP server. Here's how to get paid.**
 
-[tollpay.xyz](https://tollpay.xyz) · [Live Demo](https://api.tollpay.xyz/mcp) · [Docs](https://tollpay.xyz/docs)
+[tollpay.xyz](https://tollpay.xyz) · [Live Demo](https://toll-demo-server-production.up.railway.app/mcp) · [Docs](https://tollpay.xyz/docs)
 
 ---
 
@@ -36,7 +36,7 @@ Here's Watchdog — a real MCP server. Here's Watchdog with Toll. Here's Watchdo
 ```
 Agent calls search_competitors → Toll returns 402 ($0.01 USDC)
 Agent signs payment on Stellar → Toll verifies on-chain → Tool executes
-Dashboard: $0.01 earned | tx: stellar.expert/explorer/public/tx/abc123
+Dashboard: $0.01 earned | tx verified on Stellar mainnet
 ```
 
 ### Connect to the live demo
@@ -47,7 +47,7 @@ Paste this into Claude Desktop, Cursor, or any MCP client:
 {
   "mcpServers": {
     "watchdog": {
-      "url": "https://api.tollpay.xyz/mcp",
+      "url": "https://toll-demo-server-production.up.railway.app/mcp",
       "transport": "streamable-http"
     }
   }
@@ -100,7 +100,7 @@ For agents that need to pay for tools automatically:
 import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
-  serverUrl: "https://api.tollpay.xyz",
+  serverUrl: "https://toll-demo-server-production.up.railway.app",
   secretKey: "S...",
   budget: { maxPerCall: "0.10", maxDaily: "5.00" },
 })

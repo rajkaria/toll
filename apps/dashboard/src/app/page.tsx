@@ -49,7 +49,7 @@ export default function LandingPage() {
             <div className="mb-6">
               <p className="text-xs text-emerald-400 uppercase tracking-widest mb-1">Watchdog Lite — Live demo</p>
               <p className="text-lg font-semibold text-white mt-2">Real MCP server, real Stellar payments</p>
-              <p className="text-sm text-gray-400 mt-1">Connect any MCP client to <span className="text-emerald-400 font-mono text-xs">api.tollpay.xyz/mcp</span></p>
+              <p className="text-sm text-gray-400 mt-1">Connect any MCP client to the live endpoint below</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="rounded-xl bg-white/5 p-4">

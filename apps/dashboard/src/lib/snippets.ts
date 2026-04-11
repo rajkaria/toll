@@ -42,7 +42,7 @@ export const CONNECT_SNIPPET = `// Claude Desktop / any MCP client config
 {
   "mcpServers": {
     "watchdog": {
-      "url": "https://api.tollpay.xyz/mcp",
+      "url": "https://toll-demo-server-production.up.railway.app/mcp",
       "transport": "streamable-http"
     }
   }
@@ -51,7 +51,7 @@ export const CONNECT_SNIPPET = `// Claude Desktop / any MCP client config
 export const SDK_SNIPPET = `import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
-  serverUrl: "https://api.tollpay.xyz",
+  serverUrl: "https://toll-demo-server-production.up.railway.app",
   secretKey: "S...",
   budget: { maxPerCall: "0.10", maxDaily: "5.00" },
 })
