@@ -1,6 +1,6 @@
 {
   "network": "mainnet",
-  "payTo": "GAYTNRASCUCIKFXILX5OLZOFTE6QLNT76BIJ66BQWIBUNUJWVEZUPH6N",
+  "payTo": "GDQRUDNV3D3DF3KMVPWHFW7Y676AEPL7U6CEXKCD2F7HLEPFF5HKOEUV",
   "facilitatorUrl": "https://channels.openzeppelin.com/x402",
   "defaultPaymentMode": "x402",
   "tools": {
