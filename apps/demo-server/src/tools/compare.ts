@@ -88,7 +88,7 @@ export function compareTool(server: McpServer): void {
           a && b
             ? `Both ${(a.name as string)} and ${(b.name as string)} are strong options. Choose ${(a.name as string)} for ${(a.strengths as string[])[0]?.toLowerCase() ?? "its core features"}, or ${(b.name as string)} for ${(b.strengths as string[])[0]?.toLowerCase() ?? "its unique advantages"}.`
             : "Insufficient data for recommendation.",
-        source: "Watchdog Lite — Paid via MPP on Stellar Testnet",
+        source: "Watchdog Lite — Paid via MPP on Stellar Mainnet",
         timestamp: new Date().toISOString(),
       }
 

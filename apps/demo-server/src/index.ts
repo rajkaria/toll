@@ -1,5 +1,6 @@
 import "dotenv/config"
 import express from "express"
+import cors from "cors"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { tollMiddleware, loadConfig, withToll } from "@rajkaria123/toll-gateway"
 import { createMcpServer } from "./server.js"
@@ -15,6 +16,7 @@ async function main() {
   const config = loadConfig(configPath)
 
   const app = express()
+  app.use(cors())
   app.use(express.json())
 
   // Apply Toll payment gateway middleware
@@ -32,7 +34,7 @@ async function main() {
   })
 
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", server: "Watchdog Lite", version: "0.1.0" })
+    res.json({ status: "ok", server: "Watchdog Lite", version: "0.1.0", network: config.network })
   })
 
   app.listen(PORT, () => {

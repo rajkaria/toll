@@ -42,35 +42,35 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Earnings Mock */}
+      {/* Pricing Preview */}
       <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <p className="text-xs text-emerald-400 uppercase tracking-widest mb-1">Your earnings</p>
-                <p className="text-3xl font-bold text-white">$47.20</p>
-                <p className="text-sm text-gray-400 mt-1">earned this week across 3 MCP servers</p>
-              </div>
-              <a href="https://stellar.expert/explorer/public" target="_blank" rel="noopener noreferrer" className="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 text-sm font-semibold transition-all hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25">
-                Withdraw to Wallet
-              </a>
+            <div className="mb-6">
+              <p className="text-xs text-emerald-400 uppercase tracking-widest mb-1">Watchdog Lite — Live demo</p>
+              <p className="text-lg font-semibold text-white mt-2">Real MCP server, real Stellar payments</p>
+              <p className="text-sm text-gray-400 mt-1">Connect any MCP client to <span className="text-emerald-400 font-mono text-xs">api.tollpay.xyz/mcp</span></p>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="rounded-xl bg-white/5 p-4">
-                <p className="text-xs text-gray-500 mb-1">Today</p>
-                <p className="text-lg font-semibold text-white">$8.40</p>
-                <p className="text-xs text-emerald-400">168 calls</p>
+                <p className="text-xs text-gray-500 mb-1">health_check</p>
+                <p className="text-lg font-semibold text-emerald-400">FREE</p>
+                <p className="text-xs text-gray-400">Server status</p>
               </div>
               <div className="rounded-xl bg-white/5 p-4">
-                <p className="text-xs text-gray-500 mb-1">Avg per call</p>
-                <p className="text-lg font-semibold text-white">$0.03</p>
-                <p className="text-xs text-gray-400">USDC on Stellar</p>
+                <p className="text-xs text-gray-500 mb-1">search_competitors</p>
+                <p className="text-lg font-semibold text-white">$0.01</p>
+                <p className="text-xs text-gray-400">USDC via x402</p>
               </div>
               <div className="rounded-xl bg-white/5 p-4">
-                <p className="text-xs text-gray-500 mb-1">Top tool</p>
-                <p className="text-lg font-semibold text-white">analyze</p>
-                <p className="text-xs text-gray-400">$0.02 / call</p>
+                <p className="text-xs text-gray-500 mb-1">analyze_sentiment</p>
+                <p className="text-lg font-semibold text-white">$0.02</p>
+                <p className="text-xs text-gray-400">USDC via x402</p>
+              </div>
+              <div className="rounded-xl bg-white/5 p-4">
+                <p className="text-xs text-gray-500 mb-1">compare_products</p>
+                <p className="text-lg font-semibold text-white">$0.05</p>
+                <p className="text-xs text-gray-400">USDC via MPP</p>
               </div>
             </div>
           </div>
@@ -146,35 +146,44 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Live Proof */}
+            {/* What happens */}
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">Recent mainnet transactions</p>
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 space-y-3">
-                {[
-                  { tool: "search_competitors", amount: "$0.01", time: "2 min ago", hash: "abc...def" },
-                  { tool: "analyze_sentiment", amount: "$0.02", time: "5 min ago", hash: "123...456" },
-                  { tool: "compare_products", amount: "$0.05", time: "12 min ago", hash: "789...abc" },
-                ].map((tx, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                    <div className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      <span className="text-sm text-gray-200 font-medium">{tx.tool}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm text-emerald-400 font-semibold tabular-nums">{tx.amount}</span>
-                      <span className="text-xs text-gray-600">{tx.time}</span>
-                      <a href={`https://stellar.expert/explorer/public/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                        tx &rarr;
-                      </a>
-                    </div>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">What happens when you call a paid tool</p>
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center mt-0.5">1</span>
+                  <div>
+                    <p className="text-sm text-gray-200 font-medium">Agent calls <span className="font-mono text-emerald-400">search_competitors</span></p>
+                    <p className="text-xs text-gray-500">Standard MCP JSON-RPC request</p>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold flex items-center justify-center mt-0.5">2</span>
+                  <div>
+                    <p className="text-sm text-gray-200 font-medium">Toll returns <span className="font-mono text-yellow-400">HTTP 402</span> with price</p>
+                    <p className="text-xs text-gray-500">x402 v2 spec: 0.01 USDC, Stellar pubnet, payTo address</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold flex items-center justify-center mt-0.5">3</span>
+                  <div>
+                    <p className="text-sm text-gray-200 font-medium">SDK signs USDC payment on Stellar</p>
+                    <p className="text-xs text-gray-500">Auto-retry with payment-signature header</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center mt-0.5">4</span>
+                  <div>
+                    <p className="text-sm text-gray-200 font-medium">Payment verified, tool executes</p>
+                    <p className="text-xs text-gray-500">Settlement via OpenZeppelin x402 facilitator</p>
+                  </div>
+                </div>
               </div>
               <p className="text-xs text-gray-600 mt-3 text-center">
-                Every payment is a real Stellar mainnet transaction.{" "}
-                <a href="https://stellar.expert/explorer/public" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
-                  Verify on Stellar Expert &rarr;
-                </a>
+                Every payment settles as a real Stellar mainnet transaction.{" "}
+                <Link href="/dashboard" className="text-blue-400 hover:text-blue-300">
+                  View earnings dashboard &rarr;
+                </Link>
               </p>
             </div>
           </div>

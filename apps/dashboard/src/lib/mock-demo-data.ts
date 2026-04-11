@@ -102,7 +102,7 @@ export const DEMO_STEPS: DemoStep[] = [
                 { name: "CompetitorAlpha", category: "Project Management", pricing: "$12/mo" },
                 { name: "BetaCorp", category: "Collaboration", pricing: "$8/mo" },
               ],
-              source: "Watchdog Lite — Paid via x402 on Stellar Mainnet",
+              source: "Watchdog Lite — Paid via x402 on Stellar mainnet",
             }),
           },
         ],

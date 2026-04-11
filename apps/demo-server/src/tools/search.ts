@@ -48,7 +48,7 @@ export function searchTool(server: McpServer): void {
                 query,
                 results: COMPETITOR_DATA,
                 count: COMPETITOR_DATA.length,
-                source: "Watchdog Lite — Paid via x402 on Stellar Testnet",
+                source: "Watchdog Lite — Paid via x402 on Stellar Mainnet",
                 timestamp: new Date().toISOString(),
               },
               null,
