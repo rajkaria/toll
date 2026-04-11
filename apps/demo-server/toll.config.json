@@ -1,7 +1,7 @@
 {
-  "network": "testnet",
+  "network": "mainnet",
   "payTo": "GAYTNRASCUCIKFXILX5OLZOFTE6QLNT76BIJ66BQWIBUNUJWVEZUPH6N",
-  "facilitatorUrl": "https://x402.org/facilitator",
+  "facilitatorUrl": "https://channels.openzeppelin.com/x402",
   "defaultPaymentMode": "x402",
   "tools": {
     "health_check": {

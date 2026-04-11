@@ -13,8 +13,8 @@ export function healthTool(server: McpServer): void {
                 status: "ok",
                 server: "Watchdog Lite",
                 version: "0.1.0",
-                powered_by: "Toll — MCP Monetization Gateway on Stellar",
-                network: "Stellar Testnet",
+                powered_by: "Toll — The Stripe for MCP Servers",
+                network: "Stellar Mainnet",
                 timestamp: new Date().toISOString(),
                 tools: {
                   health_check: "FREE",

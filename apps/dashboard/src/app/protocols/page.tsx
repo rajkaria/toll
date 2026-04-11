@@ -17,7 +17,7 @@ const MPP_STEPS = [
   "If missing, returns 402 + WWW-Authenticate: Payment challenge",
   "Agent signs payment via @stellar/mpp channel",
   "Agent retries with Authorization: Payment token",
-  "Toll verifies via mppx middleware",
+  "Toll verifies via mppx paywall",
   "Payment confirmed through Stellar smart contract",
   "Tool executes, earnings recorded",
 ]

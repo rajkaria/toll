@@ -74,7 +74,7 @@ export default function Dashboard() {
             Toll Dashboard
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            MCP Monetization Gateway · Stellar Testnet
+            MCP Paywall · Stellar Mainnet
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -94,6 +94,28 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Earnings Banner */}
+      {data && (
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 mb-8 flex items-center justify-between">
+          <div>
+            <p className="text-2xl font-bold text-white">
+              {formatAmount(data.stats.totalEarnings, currency, xlmPrice)}
+            </p>
+            <p className="text-sm text-gray-400 mt-0.5">
+              earned across {data.byTool.length} tools · {data.stats.totalCalls} paid calls
+            </p>
+          </div>
+          <a
+            href={`https://stellar.expert/explorer/public`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-gray-950 text-sm font-semibold transition-all hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25"
+          >
+            Withdraw to Wallet
+          </a>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-24 text-gray-600 text-sm">

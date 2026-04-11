@@ -35,7 +35,7 @@ export function RecentTransactions({ records }: RecentTransactionsProps) {
                   {r.caller ? `${r.caller.slice(0, 8)}…` : "anonymous"}
                   {r.txHash && (
                     <a
-                      href={`https://stellar.expert/explorer/testnet/tx/${r.txHash}`}
+                      href={`https://stellar.expert/explorer/public/tx/${r.txHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ml-2 text-emerald-500/60 hover:text-emerald-400 font-mono transition-colors"

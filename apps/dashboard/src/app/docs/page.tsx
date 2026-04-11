@@ -83,7 +83,7 @@ export default function DocsPage() {
         <InfoBox title="Key Concepts">
           <ul className="space-y-2 text-sm">
             <li><strong className="text-white">MCP Server</strong> — Your server exposing tools via the Model Context Protocol</li>
-            <li><strong className="text-white">Toll Gateway</strong> — Express middleware that gates tool access behind payments</li>
+            <li><strong className="text-white">Toll Gateway</strong> — Express paywall that gates tool access behind payments</li>
             <li><strong className="text-white">x402</strong> — HTTP 402-based payment protocol with on-chain verification</li>
             <li><strong className="text-white">MPP</strong> — Machine Payments Protocol for session-based Stellar payment channels</li>
             <li><strong className="text-white">USDC</strong> — USD Coin stablecoin on Stellar (7 decimal places)</li>
@@ -97,7 +97,7 @@ export default function DocsPage() {
             <div className="flex items-center gap-3 min-w-max">
               <span className="px-3 py-2 rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-300">AI Agent</span>
               <span className="text-gray-600">&rarr;</span>
-              <span className="px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">Toll Middleware</span>
+              <span className="px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">Toll Paywall</span>
               <span className="text-gray-600">&rarr;</span>
               <span className="px-3 py-2 rounded-lg border border-gray-700 bg-gray-800/50 text-gray-300">MCP Server</span>
               <span className="text-gray-600 mx-2">|</span>
@@ -132,10 +132,10 @@ export default function DocsPage() {
         </Prose>
         <CodeBlock code={QUICK_START_SNIPPET} language="typescript" filename="server.ts" />
 
-        <SubTitle>4. Set up testnet wallets</SubTitle>
+        <SubTitle>4. Set up wallets</SubTitle>
         <Prose>
           Generate keypairs for your server (receives payments) and a test agent (sends payments).
-          Friendbot funds both with 10,000 XLM on testnet.
+          For mainnet, fund your wallet with XLM and add a USDC trustline.
         </Prose>
         <CodeBlock code={`# Generate keypairs and fund via Friendbot
 pnpm --filter toll-scripts exec tsx setup-wallet.ts
@@ -156,9 +156,9 @@ X402_FACILITATOR_URL=https://x402-facilitator.stellar.org`} language="bash" file
         <SubTitle>6. Connect an MCP client</SubTitle>
         <CodeBlock code={CONNECT_SNIPPET} language="json" filename="mcp-client-config.json" />
 
-        <InfoBox title="Testnet Note">
-          For x402 payments to settle, the agent wallet needs USDC on Stellar testnet.
-          Friendbot only provides XLM. Use the Stellar Laboratory to add a USDC trustline and issue test tokens.
+        <InfoBox title="Mainnet Setup">
+          For x402 payments to settle, the agent wallet needs USDC on Stellar mainnet.
+          Add a USDC trustline and acquire USDC via an anchor or exchange.
         </InfoBox>
       </section>
 

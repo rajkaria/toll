@@ -220,7 +220,7 @@ export default function DemoPage() {
           )}
           {subState === "paying" && (
             <p className="text-xs text-blue-400 mt-2">
-              Agent is signing a USDC payment on Stellar testnet...
+              Agent is signing a USDC payment on Stellar mainnet...
             </p>
           )}
           {subState === "paid" && (

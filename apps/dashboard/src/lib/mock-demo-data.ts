@@ -34,8 +34,8 @@ export const DEMO_STEPS: DemoStep[] = [
               status: "ok",
               server: "Watchdog Lite",
               version: "0.1.0",
-              powered_by: "Toll — MCP Monetization Gateway on Stellar",
-              network: "Stellar Testnet",
+              powered_by: "Toll — The Stripe for MCP Servers",
+              network: "Stellar Mainnet",
               tools: {
                 health_check: "FREE",
                 search_competitors: "0.01 USDC (x402)",
@@ -70,7 +70,7 @@ export const DEMO_STEPS: DemoStep[] = [
       accepts: [
         {
           scheme: "exact",
-          network: "stellar:testnet",
+          network: "stellar:pubnet",
           asset: "CBIELTK6...SRPDN5",
           payTo: "GAYTNRAS...PH6N",
           amount: "100000",
@@ -102,7 +102,7 @@ export const DEMO_STEPS: DemoStep[] = [
                 { name: "CompetitorAlpha", category: "Project Management", pricing: "$12/mo" },
                 { name: "BetaCorp", category: "Collaboration", pricing: "$8/mo" },
               ],
-              source: "Watchdog Lite — Paid via x402 on Stellar Testnet",
+              source: "Watchdog Lite — Paid via x402 on Stellar Mainnet",
             }),
           },
         ],

@@ -74,7 +74,7 @@ export async function GET() {
             marginBottom: 16,
           }}
         >
-          MCP Monetization Gateway
+          The Stripe for MCP Servers
         </div>
 
         {/* Subtitle */}
@@ -87,7 +87,7 @@ export async function GET() {
             marginBottom: 32,
           }}
         >
-          Charge AI agents for tool calls with x402 + MPP on Stellar
+          Three lines of code. Your MCP server has a paywall.
         </div>
 
         {/* Protocol badges */}

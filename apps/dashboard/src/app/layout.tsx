@@ -4,18 +4,18 @@ import { SiteFooter } from "@/components/shared/SiteFooter"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Toll — MCP Monetization Gateway for Stellar",
-  description: "Charge AI agents for MCP tool usage with x402 and MPP micropayments on Stellar",
+  title: "Toll — The Stripe for MCP Servers",
+  description: "Three lines of code. Your MCP server has a paywall. USDC settles on Stellar.",
   openGraph: {
-    title: "Toll — MCP Monetization Gateway",
-    description: "Monetize your MCP server with Stellar micropayments. x402 + MPP protocols.",
+    title: "Toll — The Stripe for MCP Servers",
+    description: "Three lines of code. Your MCP server has a paywall. USDC settles on Stellar.",
     siteName: "Tollpay",
-    images: [{ url: "/api/og", width: 1200, height: 630, alt: "Tollpay — MCP Monetization Gateway for Stellar" }],
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "Toll — The Stripe for MCP Servers" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Toll — MCP Monetization Gateway",
-    description: "Charge AI agents for MCP tool calls with x402 + MPP on Stellar",
+    title: "Toll — The Stripe for MCP Servers",
+    description: "Three lines of code. Your MCP server has a paywall. USDC settles on Stellar.",
     images: ["/api/og"],
   },
 }
