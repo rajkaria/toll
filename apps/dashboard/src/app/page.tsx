@@ -295,6 +295,51 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── The Platform ── */}
+      <section className="py-24 px-6 border-t border-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest mb-3">The Platform</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
+              Not just payments.<br />Discovery, proxy, and quality — built in.
+            </h2>
+            <p className="text-gray-500 text-sm max-w-2xl mx-auto">
+              Toll is a complete platform for the agent economy. Developers monetize tools, agents discover and pay for them,
+              and quality scores ensure the best tools rise to the top.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <Link href="/registry" className="group rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 hover:bg-emerald-500/10 transition-all duration-300">
+              <div className="text-3xl mb-4">🔍</div>
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">Tool Registry</h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-3">
+                Agents discover tools by capability and price. Register your server with one command.
+                Quality scores rank the best tools.
+              </p>
+              <span className="text-xs text-emerald-400 font-medium">Browse the Registry &rarr;</span>
+            </Link>
+            <Link href="/fund" className="group rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 hover:bg-blue-500/10 transition-all duration-300">
+              <div className="text-3xl mb-4">🤖</div>
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Toll Proxy</h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-3">
+                Any MCP client can use paid tools — zero code changes. The proxy auto-creates a wallet,
+                signs USDC payments, and enforces budget limits.
+              </p>
+              <span className="text-xs text-blue-400 font-medium">Set up your wallet &rarr;</span>
+            </Link>
+            <Link href="/why-toll" className="group rounded-2xl border border-purple-500/20 bg-purple-500/5 p-6 hover:bg-purple-500/10 transition-all duration-300">
+              <div className="text-3xl mb-4">⚡</div>
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Why Toll?</h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-3">
+                The payment infrastructure the agent economy needs. 3-second settlement, $0.00001 fees,
+                and a developer experience that takes 5 minutes.
+              </p>
+              <span className="text-xs text-purple-400 font-medium">Learn more &rarr;</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Quick Start ── */}
       <section id="quickstart" className="py-24 px-6 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/3 to-transparent pointer-events-none" />
