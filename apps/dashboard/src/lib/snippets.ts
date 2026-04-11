@@ -9,6 +9,36 @@ app.use("/mcp", tollMiddleware({
   }
 }))`
 
+export const BEFORE_SNIPPET = `import express from "express"
+
+const app = express()
+app.use(express.json())
+
+// Your MCP server — handles tool calls
+app.post("/mcp", async (req, res) => {
+  await mcpServer.handle(req, res)
+})
+
+app.listen(3000)`
+
+export const AFTER_SNIPPET = `import express from "express"
+import { tollMiddleware } from "@rajkaria123/toll-gateway"
+
+const app = express()
+app.use(express.json())
+
+// One line. Every paid tool call now earns USDC.
+app.use("/mcp", tollMiddleware({
+  payTo: "G...YOUR_STELLAR_ADDRESS",
+  tools: { search: { price: "0.01" }, analyze: { price: "0.05" } },
+}))
+
+app.post("/mcp", async (req, res) => {
+  await mcpServer.handle(req, res)
+})
+
+app.listen(3000)`
+
 export const QUICK_START_SNIPPET = `import express from "express"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { tollMiddleware, loadConfig, createHealthRoutes } from "@rajkaria123/toll-gateway"

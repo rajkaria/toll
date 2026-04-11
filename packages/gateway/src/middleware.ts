@@ -72,7 +72,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
     const toolName = req.body.params.name
     // Validate tool name: alphanumeric, underscores, hyphens only (prevent injection)
     if (typeof toolName !== "string" || !/^[a-zA-Z0-9_-]+$/.test(toolName)) {
-      res.status(400).json({ error: "Invalid tool name" })
+      res.status(400).json({ error: "Invalid tool name", detail: "Tool names must contain only letters, numbers, underscores, and hyphens." })
       return
     }
     const toolConfig = config.tools[toolName]
@@ -90,7 +90,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
     if (apiKey) {
       const keyConfig = config.apiKeys?.[apiKey]
       if (!keyConfig) {
-        res.status(401).json({ error: "Invalid API key" })
+        res.status(401).json({ error: "Invalid API key", detail: "The x-toll-api-key header does not match any registered key. Check your API key configuration." })
         return
       }
       if (keyConfig.allowedTools?.length && !keyConfig.allowedTools.includes(toolName)) {
@@ -136,7 +136,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
 
       // Replay protection: reject already-used payment signatures
       if (replayGuard.check(paymentHeader)) {
-        res.status(402).json({ error: "Payment signature already used (replay rejected)" })
+        res.status(402).json({ error: "Payment signature already used", detail: "This payment-signature header has already been used. Each payment must be a unique Stellar transaction. Signatures expire after 5 minutes." })
         return
       }
 
@@ -144,7 +144,7 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
       const result = await x402.settle(paymentHeader, requirements)
 
       if (!result.success) {
-        res.status(402).json({ error: result.error ?? "Payment verification failed" })
+        res.status(402).json({ error: result.error ?? "Payment verification failed", detail: "The payment signature could not be verified on Stellar. Ensure your x402 client is signing with a funded wallet on the correct network.", tool: toolName, price: toolConfig.price })
         return
       }
 
@@ -220,8 +220,10 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
         console.error(`[Toll] MPP verification failed for tool '${toolName}':`, err)
         res.status(402).json({
           error: "MPP payment verification failed",
+          detail: "The MPP session payment could not be verified. Ensure your MPP client is configured for the correct Stellar network.",
           protocol: "mpp",
           tool: toolName,
+          price: toolConfig.price,
         })
         return
       }

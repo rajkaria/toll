@@ -254,11 +254,11 @@ All packages published on npm as v0.1.0.
 
 See [VISION.md](./VISION.md) for the full product roadmap — from developer adoption to the Toll Marketplace to Stellar becoming the default payment rail for the AI agent economy.
 
-## Known Limitations
+## Roadmap
 
-- **Rate limiter is in-memory** — resets on server restart (persistent store planned for v0.2)
-- **SQLite for earnings** — works for single-server; PostgreSQL for multi-server planned
-- **No streaming payment support yet** — x402 streaming payments coming in Month 3
+- **v0.2** — Persistent rate limiter (Redis), PostgreSQL earnings store for multi-server deployments
+- **v0.3** — Streaming payment support via x402 streaming, framework adapters (Hono, Fastify)
+- **v1.0** — Toll Marketplace, dynamic pricing engine, multi-chain settlement
 
 ## License
 

@@ -2,16 +2,13 @@ import { CodeBlock } from "@/components/shared/CodeBlock"
 import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET } from "@/lib/snippets"
 
 const TOC = [
-  { id: "overview", label: "Overview" },
-  { id: "why-stellar", label: "Why Stellar" },
   { id: "quick-start", label: "Quick Start" },
+  { id: "how-it-works", label: "How Toll Works" },
   { id: "configuration", label: "Configuration" },
-  { id: "payment-flows", label: "Payment Flows" },
-  { id: "api-reference", label: "API Reference" },
   { id: "agent-sdk", label: "Agent SDK" },
-  { id: "earnings-tracking", label: "Earnings Tracking" },
+  { id: "earnings", label: "Earnings & Dashboard" },
   { id: "security", label: "Security" },
-  { id: "deployment", label: "Deployment" },
+  { id: "faq", label: "FAQ & Troubleshooting" },
 ]
 
 function Anchor({ id }: { id: string }) {
@@ -43,312 +40,149 @@ function InfoBox({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+function FaqItem({ q, children }: { q: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+      <h4 className="text-sm font-semibold text-white mb-2">{q}</h4>
+      <div className="text-sm text-gray-400 leading-relaxed">{children}</div>
+    </div>
+  )
+}
+
 export default function DocsPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
+    <main className="max-w-6xl mx-auto px-6 py-12">
       <div className="animate-fade-in">
         <p className="text-xs text-emerald-400 font-medium uppercase tracking-widest mb-3">Documentation</p>
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Toll Gateway Docs</h1>
-        <p className="text-sm text-gray-500 mb-12">Everything you need to monetize your MCP server with Stellar micropayments</p>
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">Toll Docs</h1>
+        <p className="text-sm text-gray-500 mb-12">Add payments to your MCP server. Earn USDC on every tool call. Settled on Stellar in seconds.</p>
       </div>
 
-      {/* TOC */}
-      <nav className="animate-fade-in delay-100 rounded-2xl border border-white/5 bg-white/[0.02] p-6 mb-16">
-        <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">On this page</p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {TOC.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className="text-sm text-gray-400 hover:text-emerald-400 transition-colors py-1"
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </nav>
-
-      {/* Overview */}
-      <Anchor id="overview" />
-      <section>
-        <SectionTitle>Overview</SectionTitle>
-        <Prose>
-          Toll is a payment gateway for MCP (Model Context Protocol) servers. It sits between AI agents
-          and your tool implementations, enforcing micropayments on the Stellar network before tool execution.
-        </Prose>
-        <Prose>
-          When an AI agent calls a paid tool, Toll intercepts the request and returns an HTTP 402 response
-          with payment requirements. The agent signs a USDC transaction on Stellar, retries with the payment
-          proof, and Toll verifies the payment before allowing the tool to execute.
-        </Prose>
-
-        <InfoBox title="Key Concepts">
-          <ul className="space-y-2 text-sm">
-            <li><strong className="text-white">MCP Server</strong> — Your server exposing tools via the Model Context Protocol</li>
-            <li><strong className="text-white">Toll Gateway</strong> — Express paywall that gates tool access behind payments</li>
-            <li><strong className="text-white">x402</strong> — HTTP 402-based payment protocol with on-chain verification</li>
-            <li><strong className="text-white">MPP</strong> — Machine Payments Protocol for session-based Stellar payment channels</li>
-            <li><strong className="text-white">USDC</strong> — USD Coin stablecoin on Stellar (7 decimal places)</li>
-            <li><strong className="text-white">Facilitator</strong> — x402 settlement service that verifies transactions on-chain</li>
-          </ul>
-        </InfoBox>
-
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 my-6">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">Architecture</p>
-          <div className="flex items-center justify-between text-xs text-gray-400 py-4 overflow-x-auto" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-            <div className="flex items-center gap-3 min-w-max">
-              <span className="px-3 py-2 rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-300">AI Agent</span>
-              <span className="text-gray-600">&rarr;</span>
-              <span className="px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">Toll Paywall</span>
-              <span className="text-gray-600">&rarr;</span>
-              <span className="px-3 py-2 rounded-lg border border-gray-700 bg-gray-800/50 text-gray-300">MCP Server</span>
-              <span className="text-gray-600 mx-2">|</span>
-              <span className="px-3 py-2 rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-300">Stellar Network</span>
+      <div className="flex gap-10">
+        {/* Sticky sidebar */}
+        <nav className="hidden lg:block w-52 shrink-0">
+          <div className="sticky top-24">
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">On this page</p>
+            <div className="flex flex-col gap-1">
+              {TOC.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className="text-sm text-gray-500 hover:text-emerald-400 transition-colors py-1.5 border-l-2 border-transparent hover:border-emerald-500/50 pl-3"
+                >
+                  {item.label}
+                </a>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </nav>
 
-      <Divider />
+        {/* Content */}
+        <div className="flex-1 min-w-0">
 
-      {/* Why Stellar */}
-      <Anchor id="why-stellar" />
-      <section>
-        <SectionTitle>Why Stellar</SectionTitle>
-        <Prose>
-          AI agent micropayments have specific requirements that no other blockchain meets. Toll runs on Stellar because it is the only network where a $0.001 tool call is economically viable.
-        </Prose>
-
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-6">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
-                <th className="px-5 py-3.5 text-left font-medium">Requirement</th>
-                <th className="px-5 py-3.5 text-left font-medium">Why It Matters</th>
-                <th className="px-5 py-3.5 text-left font-medium">Stellar</th>
-              </tr>
-            </thead>
-            <tbody className="text-xs">
-              {[
-                ["Sub-second finality", "Agents can't wait 12s for Ethereum blocks", "3-5 second settlement"],
-                ["Near-zero fees", "A $0.001 tool call must be profitable", "~$0.00001 per tx"],
-                ["Native USDC", "No bridge risk, no wrapped tokens", "First-class Stellar asset"],
-                ["x402 + MPP support", "Both payment protocols required", "Both protocols live on Stellar"],
-              ].map(([req, why, stellar]) => (
-                <tr key={req} className="border-b border-white/5 last:border-0">
-                  <td className="px-5 py-3 text-emerald-400 font-medium">{req}</td>
-                  <td className="px-5 py-3 text-gray-400">{why}</td>
-                  <td className="px-5 py-3 text-white">{stellar}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <InfoBox title="Zero Blockchain Complexity">
-          Toll abstracts all Stellar internals. As a developer, you never configure wallets, sign transactions,
-          or understand consensus. You run <code className="text-emerald-400">npm install @rajkaria123/toll-gateway</code>,
-          add 3 lines of config, and start earning USDC. The monetary layer is Stellar. The developer experience is Toll.
-          Build your agent however you want — the payment rail is handled.
-        </InfoBox>
-
-        <SubTitle>How Toll Enables Any Agent on Stellar</SubTitle>
-        <Prose>
-          Toll is not an SDK you rebuild your agent around. It is middleware you add to your existing MCP server.
-          Your tools, your logic, your framework — nothing changes. Toll sits in front and handles the money.
-        </Prose>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-          {[
-            { step: "1", title: "Build Your Agent", desc: "Use any language, any framework, any MCP server implementation. Toll doesn't care how your tools work." },
-            { step: "2", title: "Add Toll", desc: "npm install, add toll.config.json with your tool prices. One middleware line in your Express server." },
-            { step: "3", title: "Earn on Stellar", desc: "Every paid tool call settles in USDC on Stellar mainnet. Track earnings in real-time on the dashboard." },
-          ].map((item) => (
-            <div key={item.step} className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
-              <span className="inline-block w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center mb-3">{item.step}</span>
-              <h4 className="text-sm font-semibold text-white mb-1">{item.title}</h4>
-              <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <Divider />
-
-      {/* Quick Start */}
+      {/* ── Quick Start ── */}
       <Anchor id="quick-start" />
       <section>
         <SectionTitle>Quick Start</SectionTitle>
+        <Prose>
+          Three steps to start earning from your MCP tools.
+        </Prose>
 
-        <SubTitle>1. Install packages</SubTitle>
-        <CodeBlock code="npm install @rajkaria123/toll-gateway @rajkaria123/toll-stellar express @modelcontextprotocol/sdk" language="bash" />
+        <SubTitle>1. Install</SubTitle>
+        <CodeBlock code="npm install @rajkaria123/toll-gateway @rajkaria123/toll-stellar" language="bash" filename="terminal" />
 
         <SubTitle>2. Create toll.config.json</SubTitle>
         <Prose>
-          Define your tools, prices, and payment modes. Each tool maps to a price in USDC and
-          an optional payment protocol override.
+          List your tools with prices. Tools with price {`"0"`} are free. Everything else charges USDC.
         </Prose>
         <CodeBlock code={TOLL_CONFIG_SNIPPET} language="json" filename="toll.config.json" />
 
         <SubTitle>3. Add middleware to your server</SubTitle>
         <Prose>
           Place <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>tollMiddleware()</code> before
-          your MCP transport. It intercepts <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>tools/call</code> requests
-          and enforces payment.
+          your MCP transport handler. It intercepts <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>tools/call</code> requests
+          and enforces payment before execution.
         </Prose>
         <CodeBlock code={QUICK_START_SNIPPET} language="typescript" filename="server.ts" />
 
-        <SubTitle>4. Set up wallets</SubTitle>
-        <Prose>
-          Generate keypairs for your server (receives payments) and a test agent (sends payments).
-          For mainnet, fund your wallet with XLM and add a USDC trustline.
-        </Prose>
-        <CodeBlock code={`# Generate keypairs and fund via Friendbot
-pnpm --filter toll-scripts exec tsx setup-wallet.ts
-
-# Output:
-# Server wallet: GABCD... (receives payments)
-# Agent wallet:  GEFGH... (sends payments)
-# Both funded with 10,000 XLM`} language="bash" />
-
-        <SubTitle>5. Create .env file</SubTitle>
-        <CodeBlock code={`PORT=3002
-TOLL_SERVER_SECRET=S...your_server_secret_key
-TOLL_SERVER_ADDRESS=G...your_server_public_key
-ANTHROPIC_API_KEY=sk-ant-...  # optional, for Claude-powered tools
-TOLL_DATA_DIR=~/.toll
-X402_FACILITATOR_URL=https://channels.openzeppelin.com/x402`} language="bash" filename=".env" />
-
-        <SubTitle>6. Connect an MCP client</SubTitle>
-        <CodeBlock code={CONNECT_SNIPPET} language="json" filename="mcp-client-config.json" />
-
-        <InfoBox title="Mainnet Setup">
-          For x402 payments to settle, the agent wallet needs USDC on Stellar mainnet.
-          Add a USDC trustline and acquire USDC via an anchor or exchange.
+        <InfoBox title="Mainnet deployment">
+          For production on Stellar mainnet, you need a funded Stellar wallet with a USDC trustline.
+          Set your public address as <code className="text-emerald-400">payTo</code> in the config.
+          The x402 facilitator at <code className="text-emerald-400">channels.openzeppelin.com/x402</code> handles settlement.
         </InfoBox>
+
+        <SubTitle>Connect an MCP client</SubTitle>
+        <Prose>
+          Point any MCP client (Claude Desktop, Cursor, etc.) to your server.
+        </Prose>
+        <CodeBlock code={CONNECT_SNIPPET} language="json" filename="mcp-client-config.json" />
       </section>
 
       <Divider />
 
-      {/* Configuration */}
-      <Anchor id="configuration" />
+      {/* ── How Toll Works ── */}
+      <Anchor id="how-it-works" />
       <section>
-        <SectionTitle>Configuration Reference</SectionTitle>
+        <SectionTitle>How Toll Works</SectionTitle>
         <Prose>
-          All configuration lives in a single <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>toll.config.json</code> file,
-          validated at startup using Zod schemas.
+          Toll is Express middleware. It sits between AI agents and your MCP tools.
+          When an agent calls a paid tool, Toll intercepts the request, requires payment,
+          verifies it on Stellar, and then lets the tool execute.
         </Prose>
 
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-6">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
-                <th className="px-5 py-3.5 text-left font-medium">Field</th>
-                <th className="px-5 py-3.5 text-left font-medium">Type</th>
-                <th className="px-5 py-3.5 text-left font-medium">Required</th>
-                <th className="px-5 py-3.5 text-left font-medium">Description</th>
-              </tr>
-            </thead>
-            <tbody className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-              {([
-                ["network", '"testnet" | "mainnet"', "Yes", "Stellar network"],
-                ["payTo", "string", "Yes", "Server's Stellar address (G...)"],
-                ["facilitatorUrl", "string", "Yes", "x402 facilitator URL"],
-                ["defaultPaymentMode", '"x402" | "mpp"', "Yes", "Default protocol for all tools"],
-                ["tools", "Record<string, Tool>", "Yes", "Map of tool name to config"],
-                ["tools[].price", "string", "Yes", 'Price in USDC (e.g. "0.01")'],
-                ["tools[].currency", '"USDC"', "Yes", "Payment currency"],
-                ["tools[].paymentMode", '"x402" | "mpp"', "No", "Override default per tool"],
-                ["tools[].description", "string", "No", "Human-readable description"],
-                ["tools[].rateLimit.free", "number", "No", "Free calls before payment"],
-                ["tools[].rateLimit.perHour", "boolean", "No", "true = hourly, false = daily"],
-                ["dataDir", "string", "No", "SQLite data directory (~/.toll)"],
-              ] as const).map(([field, type, req, desc]) => (
-                <tr key={field} className="border-b border-white/5 last:border-0">
-                  <td className="px-5 py-3 text-emerald-400">{field}</td>
-                  <td className="px-5 py-3 text-gray-500">{type}</td>
-                  <td className="px-5 py-3">
-                    <span className={req === "Yes" ? "text-white" : "text-gray-600"}>{req}</span>
-                  </td>
-                  <td className="px-5 py-3 text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <SubTitle>USDC Decimal Precision</SubTitle>
-        <Prose>
-          USDC on Stellar uses 7 decimal places. The price field accepts human-readable values.
-          Internally, Toll converts to base units using <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>toUsdcBaseUnits()</code>:
-        </Prose>
-        <CodeBlock code={`"0.01"  USDC  →  100000   base units
-"0.001" USDC  →  10000    base units
-"1.00"  USDC  →  10000000 base units`} language="text" />
-      </section>
-
-      <Divider />
-
-      {/* Payment Flows */}
-      <Anchor id="payment-flows" />
-      <section>
-        <SectionTitle>Payment Flows</SectionTitle>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
-          {/* x402 */}
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 border-t-2 border-t-blue-500">
-            <h3 className="text-base font-bold text-blue-300 mb-5">x402 Protocol</h3>
-            <ol className="space-y-4">
-              {[
-                ["POST", "Agent sends tool call to /mcp"],
-                ["CHECK", "Toll checks for payment-signature header"],
-                ["402", "If missing, returns HTTP 402 + PaymentRequired"],
-                ["SIGN", "Agent signs Stellar USDC transaction"],
-                ["RETRY", "Agent retries with payment-signature header"],
-                ["SETTLE", "Toll POSTs to facilitator /settle"],
-                ["VERIFY", "Facilitator verifies on Stellar network"],
-                ["EXEC", "Tool executes, earnings recorded"],
-              ].map(([label, step], i) => (
-                <li key={i} className="flex gap-3 text-xs">
-                  <span className="shrink-0 w-12 text-right text-blue-500/60 font-mono uppercase">{label}</span>
-                  <span className="text-gray-300">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* MPP */}
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 border-t-2 border-t-purple-500">
-            <h3 className="text-base font-bold text-purple-300 mb-5">MPP Protocol</h3>
-            <ol className="space-y-4">
-              {[
-                ["POST", "Agent sends tool call to /mcp"],
-                ["CHECK", "Toll checks for Authorization header"],
-                ["402", "Returns 402 + WWW-Authenticate: Payment"],
-                ["SIGN", "Agent signs via @stellar/mpp channel"],
-                ["RETRY", "Agent retries with Authorization: Payment"],
-                ["VERIFY", "Toll verifies via mppx middleware"],
-                ["SETTLE", "Payment confirmed via smart contract"],
-                ["EXEC", "Tool executes, earnings recorded"],
-              ].map(([label, step], i) => (
-                <li key={i} className="flex gap-3 text-xs">
-                  <span className="shrink-0 w-12 text-right text-purple-500/60 font-mono uppercase">{label}</span>
-                  <span className="text-gray-300">{step}</span>
-                </li>
-              ))}
-            </ol>
+        {/* Architecture */}
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 my-6">
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">Request flow</p>
+          <div className="flex items-center justify-between text-xs text-gray-400 py-4 overflow-x-auto" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="flex items-center gap-3 min-w-max">
+              <span className="px-3 py-2 rounded-lg border border-blue-500/30 bg-blue-500/10 text-blue-300">AI Agent</span>
+              <span className="text-gray-600">&rarr;</span>
+              <span className="px-3 py-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">Toll Middleware</span>
+              <span className="text-gray-600">&rarr;</span>
+              <span className="px-3 py-2 rounded-lg border border-gray-700 bg-gray-800/50 text-gray-300">Your MCP Server</span>
+              <span className="text-gray-600 mx-2">|</span>
+              <span className="px-3 py-2 rounded-lg border border-purple-500/30 bg-purple-500/10 text-purple-300">Stellar USDC</span>
+            </div>
           </div>
         </div>
 
-        <SubTitle>Free Tool Bypass</SubTitle>
+        <SubTitle>x402 payment flow (per-call)</SubTitle>
+        <Prose>
+          x402 is the default protocol. Each paid tool call is a separate USDC transaction verified on-chain.
+        </Prose>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 my-4">
+          <ol className="space-y-3">
+            {[
+              ["Agent calls tool", "Standard MCP JSON-RPC POST to /mcp"],
+              ["Toll checks for payment", "Looks for payment-signature header"],
+              ["Returns 402 if unpaid", "Response includes price, payTo address, asset, network"],
+              ["Agent signs USDC payment", "Signs a Stellar transaction via x402 SDK"],
+              ["Agent retries with proof", "Sends payment-signature header"],
+              ["Facilitator verifies on-chain", "OpenZeppelin confirms the Stellar transaction"],
+              ["Tool executes", "Payment recorded, tool runs, result returned"],
+            ].map(([title, desc], i) => (
+              <li key={i} className="flex gap-3 text-xs">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                <div>
+                  <span className="text-gray-200 font-medium">{title}</span>
+                  <span className="text-gray-500 ml-2">&mdash; {desc}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <SubTitle>MPP payment flow (session-based)</SubTitle>
+        <Prose>
+          MPP (Machine Payments Protocol) uses Stellar payment channels for session-based billing.
+          Set <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>paymentMode: {`"mpp"`}</code> on
+          individual tools to use MPP instead of x402. MPP support is experimental.
+        </Prose>
+
+        <SubTitle>Free tools and rate limiting</SubTitle>
         <Prose>
           Tools with <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{`"price": "0"`}</code> skip
-          all payment checks. Unknown tool names also pass through. This lets you mix free and paid tools on the same server.
-        </Prose>
-
-        <SubTitle>Rate Limiting</SubTitle>
-        <Prose>
-          Configure a free tier with <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>rateLimit</code> —
-          the first N calls per IP are free, then payment is required. Rate limits reset hourly or daily.
+          all payment checks. You can also set a free tier on paid tools &mdash; the first N calls per IP are free, then payment kicks in.
         </Prose>
         <CodeBlock code={`"search_competitors": {
   "price": "0.01",
@@ -362,113 +196,120 @@ X402_FACILITATOR_URL=https://channels.openzeppelin.com/x402`} language="bash" fi
 
       <Divider />
 
-      {/* API Reference */}
-      <Anchor id="api-reference" />
+      {/* ── Configuration ── */}
+      <Anchor id="configuration" />
       <section>
-        <SectionTitle>API Reference</SectionTitle>
+        <SectionTitle>Configuration</SectionTitle>
+        <Prose>
+          All configuration lives in <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>toll.config.json</code>,
+          validated at startup with Zod. Invalid configs fail fast with clear error messages.
+        </Prose>
 
-        {[
-          {
-            sig: "tollMiddleware(config: TollConfig): RequestHandler",
-            pkg: "@rajkaria123/toll-gateway",
-            desc: "Express middleware that intercepts MCP tools/call requests and enforces payment. Place before your StreamableHTTPServerTransport handler.",
-            example: `import { tollMiddleware, loadConfig } from "@rajkaria123/toll-gateway"
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
+                <th className="px-5 py-3.5 text-left font-medium">Field</th>
+                <th className="px-5 py-3.5 text-left font-medium">Type</th>
+                <th className="px-5 py-3.5 text-left font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {([
+                ["network", '"testnet" | "mainnet"', "Stellar network to use"],
+                ["payTo", "string", "Your Stellar public address (G...)"],
+                ["facilitatorUrl", "string", "x402 facilitator URL"],
+                ["defaultPaymentMode", '"x402" | "mpp"', "Default protocol for all tools"],
+                ["tools", "Record<string, ToolConfig>", "Map of tool names to pricing config"],
+                ["tools[].price", "string", 'USDC price per call (e.g. "0.01")'],
+                ["tools[].currency", '"USDC"', "Payment currency"],
+                ["tools[].paymentMode", '"x402" | "mpp"', "Override default per tool"],
+                ["tools[].rateLimit.free", "number", "Free calls before payment required"],
+                ["spendingPolicy", "object", "Global spending limits"],
+              ] as const).map(([field, type, desc]) => (
+                <tr key={field} className="border-b border-white/5 last:border-0">
+                  <td className="px-5 py-3 text-emerald-400">{field}</td>
+                  <td className="px-5 py-3 text-gray-500">{type}</td>
+                  <td className="px-5 py-3 text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-const config = loadConfig("./toll.config.json")
-app.use("/mcp", tollMiddleware(config))`,
-          },
-          {
-            sig: "withToll(server: McpServer, config: TollConfig): McpServer",
-            pkg: "@rajkaria123/toll-gateway",
-            desc: "Wraps MCP tool handlers for stdio transport. Paid tools return a JSON-RPC error with payment info instead of executing. Use alongside tollMiddleware for HTTP.",
-            example: `const mcpServer = createMcpServer()
-withToll(mcpServer, config)`,
-          },
-          {
-            sig: "loadConfig(path: string): TollConfig",
-            pkg: "@rajkaria123/toll-gateway",
-            desc: "Reads and validates a toll.config.json file. Throws with descriptive errors if validation fails.",
-            example: `const config = loadConfig("./toll.config.json")
-console.log(config.payTo)  // G...
-console.log(config.tools)  // { tool_name: { price, currency, ... } }`,
-          },
-          {
-            sig: "new EarningsTracker(dataDir?: string)",
-            pkg: "@rajkaria123/toll-stellar",
-            desc: "SQLite-backed tracker for payment records. Auto-creates the database and schema. Default directory: ~/.toll",
-            example: `const tracker = new EarningsTracker("./data")
+        <SubTitle>How to price your tools</SubTitle>
+        <Prose>
+          There is no right answer, but here are guidelines based on what the tool does:
+        </Prose>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-4">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
+                <th className="px-5 py-3 text-left font-medium">Tool type</th>
+                <th className="px-5 py-3 text-left font-medium">Suggested price</th>
+                <th className="px-5 py-3 text-left font-medium">Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Health check / status", "Free ($0)", "Builds trust, lets agents verify your server is up"],
+                ["Simple lookup / search", "$0.001 - $0.01", "Low cost per call, high volume expected"],
+                ["Analysis / processing", "$0.01 - $0.10", "More compute, more value to the caller"],
+                ["Complex multi-step", "$0.10 - $1.00", "Significant processing, data access, or API costs"],
+              ].map(([type, price, why]) => (
+                <tr key={type} className="border-b border-white/5 last:border-0">
+                  <td className="px-5 py-3 text-gray-300 font-medium">{type}</td>
+                  <td className="px-5 py-3 text-emerald-400">{price}</td>
+                  <td className="px-5 py-3 text-gray-400">{why}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-// Record a payment
-tracker.record({
-  tool: "search_competitors",
-  caller: "GABCD...",
-  amountUsdc: 0.01,
-  protocol: "x402",
-  txHash: "abc123..."
-})
+        <SubTitle>Spending policies</SubTitle>
+        <Prose>
+          Protect your server from runaway spending with global limits.
+        </Prose>
+        <CodeBlock code={`"spendingPolicy": {
+  "maxPerCall": "0.10",         // No single call costs more than $0.10
+  "maxDailyPerCaller": "1.00",  // Each caller capped at $1/day
+  "maxDailyGlobal": "10.00"    // Total daily cap across all callers
+}`} language="json" />
 
-// Query stats
-tracker.getStats()         // { totalEarnings, totalCalls, ... }
-tracker.getByTool()        // [{ tool, calls, revenue, avgPrice }]
-tracker.getRecent(20)      // last 20 transactions
-tracker.getProtocolSplit() // { x402: 75, mpp: 25 }
-
-tracker.close() // always close when done`,
-          },
-          {
-            sig: "new X402Verifier(config: TollConfig)",
-            pkg: "@rajkaria123/toll-stellar",
-            desc: "Builds x402 PaymentRequired responses and verifies payments via the facilitator /settle endpoint.",
-            example: `const verifier = new X402Verifier(config)
-
-// Build 402 response
-const requirements = verifier.buildRequirements("tool_name", "0.01", resourceUrl)
-
-// Verify payment
-const result = await verifier.settle(paymentSignatureHeader, requirements)
-// { success: true, transaction: "hash...", payer: "G..." }`,
-          },
-        ].map((api) => (
-          <div key={api.sig} className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 mb-5">
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <h3 className="text-sm font-semibold text-emerald-400" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                {api.sig}
-              </h3>
-              <span className="text-[10px] text-gray-600 px-2 py-0.5 rounded-full border border-white/5 whitespace-nowrap" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                {api.pkg}
-              </span>
-            </div>
-            <p className="text-xs text-gray-400 mb-4 leading-relaxed">{api.desc}</p>
-            <CodeBlock code={api.example} language="typescript" />
-          </div>
-        ))}
+        <SubTitle>USDC decimal precision</SubTitle>
+        <Prose>
+          USDC on Stellar uses 7 decimal places. Toll converts your human-readable prices internally:
+        </Prose>
+        <CodeBlock code={`"0.01"  USDC  →  100000   base units (stroops)
+"0.001" USDC  →  10000    base units
+"1.00"  USDC  →  10000000 base units`} language="text" />
       </section>
 
       <Divider />
 
-      {/* Agent SDK */}
+      {/* ── Agent SDK ── */}
       <Anchor id="agent-sdk" />
       <section>
         <SectionTitle>Agent SDK</SectionTitle>
         <Prose>
-          The Agent SDK handles the full payment lifecycle for AI agents: discovers tools, detects 402 responses,
-          signs USDC payments on Stellar, retries requests, and tracks spending — all automatically.
+          For AI agents that need to discover and pay for tools automatically.
+          The SDK handles 402 detection, USDC signing, request retry, and budget enforcement.
         </Prose>
 
         <SubTitle>Install</SubTitle>
         <CodeBlock code="npm install @rajkaria123/toll-sdk" language="bash" />
 
-        <SubTitle>Basic Usage</SubTitle>
+        <SubTitle>Basic usage</SubTitle>
         <CodeBlock code={`import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
-  serverUrl: "https://api.tollpay.xyz",
+  serverUrl: "https://your-server.com",
   secretKey: "S...",  // Stellar Ed25519 secret key
   budget: {
-    maxPerCall: "0.10",  // Max $0.10 per tool call
-    maxDaily: "5.00",    // Max $5/day total spending
+    maxPerCall: "0.10",
+    maxDaily: "5.00",
   },
-  autoRetry: true,  // Auto-pay on 402 (default: true)
 })
 
 // Free tool — no payment
@@ -477,90 +318,133 @@ const health = await toll.callTool("health_check")
 // Paid tool — auto-handles 402 → sign → retry
 const result = await toll.callTool("search_competitors", {
   query: "AI agent frameworks"
-})
-// { success: true, data: {...}, paid: true, amount: "0.01", protocol: "x402" }`} language="typescript" />
-
-        <SubTitle>Discover Available Tools</SubTitle>
-        <CodeBlock code={`const manifest = await toll.discoverTools()
-// { tools: [
-//   { name: "health_check", price: "0", free: true },
-//   { name: "search_competitors", price: "0.01", currency: "USDC", paymentMode: "x402" }
-// ], network: "mainnet" }`} language="typescript" />
-
-        <SubTitle>Track Spending</SubTitle>
-        <CodeBlock code={`const report = toll.getSpending()
-// {
-//   totalSpent: 0.03,
-//   callCount: 2,
-//   byTool: { search_competitors: { spent: 0.01, calls: 1 }, analyze_sentiment: { spent: 0.02, calls: 1 } },
-//   dailyBudget: 5.00,
-//   dailyRemaining: 4.97
-// }`} language="typescript" />
-
-        <SubTitle>Event System</SubTitle>
-        <CodeBlock code={`toll.on("payment", (event, data) => {
-  console.log(\`Paid \${data.amount} USDC for \${data.tool} via \${data.protocol}\`)
-})
-
-toll.on("budget_warning", (event, data) => {
-  console.log(\`Budget warning: \${data.remaining} USDC remaining today\`)
-})
-
-toll.on("error", (event, data) => {
-  console.error(\`Payment failed: \${data.error}\`)
 })`} language="typescript" />
 
-        <InfoBox title="Budget Safety">
-          The SDK enforces hard budget limits. If a tool call would exceed your per-call or daily budget,
-          it returns an error immediately without attempting payment. This prevents runaway spending
-          from autonomous agents.
+        <SubTitle>Discover available tools</SubTitle>
+        <CodeBlock code={`const manifest = await toll.discoverTools()
+// Returns: { tools: [{ name, price, currency, paymentMode }], network }`} language="typescript" />
+
+        <SubTitle>Track spending</SubTitle>
+        <CodeBlock code={`const report = toll.getSpending()
+// { totalSpent, callCount, byTool, dailyRemaining }`} language="typescript" />
+
+        <SubTitle>Events</SubTitle>
+        <CodeBlock code={`toll.on("payment", (ev, data) => console.log(\`Paid \${data.amount} for \${data.tool}\`))
+toll.on("budget_warning", (ev, data) => console.log(\`\${data.remaining} remaining\`))
+toll.on("error", (ev, data) => console.error(data.error))`} language="typescript" />
+
+        <InfoBox title="Budget safety">
+          The SDK enforces hard limits. If a tool call would exceed maxPerCall or maxDaily,
+          it returns an error immediately without attempting payment. Autonomous agents cannot overspend.
         </InfoBox>
       </section>
 
       <Divider />
 
-      {/* Earnings Tracking */}
-      <Anchor id="earnings-tracking" />
+      {/* ── Earnings & Dashboard ── */}
+      <Anchor id="earnings" />
       <section>
-        <SectionTitle>Earnings Tracking</SectionTitle>
+        <SectionTitle>Earnings &amp; Dashboard</SectionTitle>
         <Prose>
-          Toll automatically records every paid tool call to a local SQLite database. The dashboard reads this
-          database to show real-time earnings analytics.
+          Every paid tool call is recorded to a local SQLite database. The dashboard reads this to show
+          real-time earnings, per-tool revenue, and per-caller analytics.
         </Prose>
 
-        <SubTitle>Database Schema</SubTitle>
+        <SubTitle>Database schema</SubTitle>
         <CodeBlock code={`CREATE TABLE transactions (
   id          TEXT PRIMARY KEY,     -- UUID
   tool        TEXT NOT NULL,        -- tool name
   caller      TEXT,                 -- Stellar address or IP
-  amount_usdc REAL NOT NULL,        -- payment amount in USDC
+  amount_usdc REAL NOT NULL,        -- payment amount
   protocol    TEXT NOT NULL,        -- "x402" or "mpp"
   tx_hash     TEXT,                 -- on-chain transaction hash
   created_at  INTEGER NOT NULL      -- Unix timestamp (ms)
 );`} language="sql" filename="~/.toll/earnings.db" />
 
-        <SubTitle>Dashboard Integration</SubTitle>
-        <Prose>
-          The Next.js dashboard at <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>/dashboard</code> reads
-          the same SQLite file. Set <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>TOLL_DATA_DIR</code> environment
-          variable to point both the MCP server and dashboard to the same database.
-        </Prose>
+        <SubTitle>API Reference</SubTitle>
+        {[
+          {
+            sig: "tollMiddleware(config: TollConfig): RequestHandler",
+            pkg: "@rajkaria123/toll-gateway",
+            desc: "Express middleware. Place before your MCP transport handler. Intercepts tools/call requests, enforces payment.",
+            example: `import { tollMiddleware, loadConfig } from "@rajkaria123/toll-gateway"\nconst config = loadConfig("./toll.config.json")\napp.use("/mcp", tollMiddleware(config))`,
+          },
+          {
+            sig: "loadConfig(path: string): TollConfig",
+            pkg: "@rajkaria123/toll-gateway",
+            desc: "Reads and validates toll.config.json. Throws with clear errors on invalid config.",
+            example: `const config = loadConfig("./toll.config.json")\nconsole.log(config.tools) // { tool_name: { price, currency } }`,
+          },
+          {
+            sig: "new EarningsTracker(dataDir?: string)",
+            pkg: "@rajkaria123/toll-stellar",
+            desc: "SQLite-backed payment recorder. Auto-creates DB. Default directory: ~/.toll",
+            example: `const tracker = new EarningsTracker("./data")\ntracker.record({ tool: "search", caller: "GABCD...", amountUsdc: 0.01, protocol: "x402", txHash: "abc..." })\ntracker.getStats()    // { totalEarnings, totalCalls }\ntracker.getByTool()   // [{ tool, calls, revenue }]`,
+          },
+          {
+            sig: "new X402Verifier(config: TollConfig)",
+            pkg: "@rajkaria123/toll-stellar",
+            desc: "Builds 402 responses and verifies payments via the facilitator.",
+            example: `const verifier = new X402Verifier(config)\nconst req = verifier.buildRequirements("tool", "0.01", resourceUrl)\nconst result = await verifier.settle(paymentHeader, req)`,
+          },
+        ].map((api) => (
+          <div key={api.sig} className="rounded-xl border border-white/5 bg-white/[0.02] p-5 mb-4">
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <h4 className="text-xs font-semibold text-emerald-400" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                {api.sig}
+              </h4>
+              <span className="text-[10px] text-gray-600 px-2 py-0.5 rounded-full border border-white/5 whitespace-nowrap" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                {api.pkg}
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">{api.desc}</p>
+            <CodeBlock code={api.example} language="typescript" />
+          </div>
+        ))}
+
+        <SubTitle>Environment variables</SubTitle>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-4">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
+                <th className="px-5 py-3 text-left font-medium">Variable</th>
+                <th className="px-5 py-3 text-left font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {[
+                ["PORT", "Server port (default: 3002)"],
+                ["TOLL_SERVER_SECRET", "Stellar secret key for payment signing"],
+                ["TOLL_SERVER_ADDRESS", "Stellar public key (must match payTo)"],
+                ["TOLL_DATA_DIR", "SQLite directory (default: ~/.toll)"],
+                ["X402_FACILITATOR_URL", "x402 facilitator endpoint"],
+                ["TOLL_EARNINGS_API_URL", "Remote earnings API for split deployments"],
+              ].map(([name, desc]) => (
+                <tr key={name} className="border-b border-white/5 last:border-0">
+                  <td className="px-5 py-3 text-emerald-400">{name}</td>
+                  <td className="px-5 py-3 text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <Divider />
 
-      {/* Security */}
+      {/* ── Security ── */}
       <Anchor id="security" />
       <section>
         <SectionTitle>Security</SectionTitle>
 
         <div className="space-y-4">
           {[
-            { title: "Payment Verification", desc: "x402 payments are verified on-chain via the facilitator. Toll never trusts client-provided payment claims without verification." },
-            { title: "No Private Keys in Config", desc: "Server secret keys go in .env (excluded from git), not in toll.config.json. The config file only contains the public payTo address." },
-            { title: "Rate Limiting", desc: "Built-in per-IP rate limiting prevents abuse of free tiers. Limits are enforced in-memory per server instance." },
-            { title: "Input Validation", desc: "All configuration is validated at startup using Zod schemas. Invalid configs fail fast with descriptive errors." },
-            { title: "Middleware Ordering", desc: "tollMiddleware runs before the MCP transport, ensuring payment is verified before tool code executes. There is no way to bypass the payment check." },
+            { title: "On-chain payment verification", desc: "Every x402 payment is verified on Stellar mainnet via the OpenZeppelin facilitator. Toll never trusts client claims without on-chain proof." },
+            { title: "Replay protection", desc: "Payment signatures are cached and rejected on reuse. Each signature has a 5-minute TTL. The same payment cannot be used twice." },
+            { title: "Spending policies", desc: "Per-call caps, daily per-caller budgets, and global daily limits. Enforced before payment is even attempted." },
+            { title: "Input validation", desc: "All config validated with Zod at startup. Tool names are validated against alphanumeric pattern. Invalid requests are rejected immediately." },
+            { title: "Middleware ordering", desc: "tollMiddleware runs before the MCP transport. There is no way to bypass the payment check and reach your tool code without paying." },
+            { title: "Key isolation", desc: "Server secret keys go in .env only. The config file contains only the public payTo address. No keys are logged or exposed." },
           ].map((item) => (
             <div key={item.title} className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
               <h4 className="text-sm font-semibold text-white mb-1">{item.title}</h4>
@@ -572,67 +456,61 @@ toll.on("error", (event, data) => {
 
       <Divider />
 
-      {/* Deployment */}
-      <Anchor id="deployment" />
+      {/* ── FAQ & Troubleshooting ── */}
+      <Anchor id="faq" />
       <section>
-        <SectionTitle>Deployment</SectionTitle>
-        <Prose>
-          The Toll gateway runs as a standard Node.js Express server. Deploy anywhere you can run Node.js.
-        </Prose>
+        <SectionTitle>FAQ &amp; Troubleshooting</SectionTitle>
 
-        <SubTitle>MCP Server (Express)</SubTitle>
-        <CodeBlock code={`# Build
-pnpm --filter demo-server build
+        <div className="space-y-4">
+          <FaqItem q="How do I get a Stellar address?">
+            <p>Generate a keypair using Stellar SDK or the Toll setup script. For mainnet, fund it with a small amount of XLM (2 XLM minimum) and add a USDC trustline. You can acquire XLM from any major exchange.</p>
+          </FaqItem>
 
-# Start in production
-node apps/demo-server/dist/index.js`} language="bash" />
+          <FaqItem q="What if an agent doesn't have an x402-compatible wallet?">
+            <p>The agent will receive a 402 response but won&apos;t be able to pay. Free tools still work. For paid tools, the agent needs the <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">@rajkaria123/toll-sdk</code> or any x402-compatible client with a funded Stellar wallet.</p>
+          </FaqItem>
 
-        <SubTitle>Dashboard (Next.js)</SubTitle>
-        <Prose>
-          The dashboard deploys to Vercel. Set the <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>TOLL_DATA_DIR</code> environment
-          variable in Vercel to point to your SQLite database location.
-        </Prose>
-        <CodeBlock code={`# Deploy to Vercel
-cd apps/dashboard && npx vercel --prod`} language="bash" />
+          <FaqItem q="Can I change prices after deployment?">
+            <p>Yes. Update <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">toll.config.json</code> and restart your server. Price changes take effect immediately. There is no migration needed.</p>
+          </FaqItem>
 
-        <SubTitle>Environment Variables</SubTitle>
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-4">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
-                <th className="px-5 py-3 text-left font-medium">Variable</th>
-                <th className="px-5 py-3 text-left font-medium">Required</th>
-                <th className="px-5 py-3 text-left font-medium">Description</th>
-              </tr>
-            </thead>
-            <tbody style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-              {[
-                ["PORT", "No", "Server port (default: 3002)"],
-                ["TOLL_SERVER_SECRET", "Yes", "Stellar secret key for MPP signing"],
-                ["TOLL_SERVER_ADDRESS", "Yes", "Stellar public key (must match payTo)"],
-                ["ANTHROPIC_API_KEY", "No", "For Claude-powered tools"],
-                ["TOLL_DATA_DIR", "No", "SQLite directory (default: ~/.toll)"],
-                ["X402_FACILITATOR_URL", "Yes", "x402 facilitator endpoint"],
-              ].map(([name, req, desc]) => (
-                <tr key={name} className="border-b border-white/5 last:border-0">
-                  <td className="px-5 py-3 text-emerald-400">{name}</td>
-                  <td className="px-5 py-3"><span className={req === "Yes" ? "text-white" : "text-gray-600"}>{req}</span></td>
-                  <td className="px-5 py-3 text-gray-400" style={{ fontFamily: "'Inter', sans-serif" }}>{desc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <FaqItem q="How do I get my earnings out?">
+            <p>Earnings are USDC in your Stellar wallet. You can send USDC to any exchange that supports Stellar USDC (Coinbase, Kraken, etc.) and convert to fiat. The funds are yours immediately &mdash; there is no holding period.</p>
+          </FaqItem>
+
+          <FaqItem q="Does Toll take a cut?">
+            <p>Currently, no. 100% of each payment goes to your <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">payTo</code> address. The only cost is the Stellar transaction fee (~$0.00001 per transaction), paid by the agent.</p>
+          </FaqItem>
+
+          <FaqItem q="The playground shows 402 but my tool doesn't execute">
+            <p>This is expected. A 402 response means the payment gate is working correctly. The tool will only execute after the agent signs a USDC payment and retries with a valid <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">payment-signature</code> header.</p>
+          </FaqItem>
+
+          <FaqItem q="Can I use Toll with a non-Express server?">
+            <p>Toll is currently Express middleware. For other frameworks (Hono, Fastify, etc.), you can adapt the middleware or use the <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">withToll()</code> wrapper which works with stdio-based MCP servers independent of HTTP framework.</p>
+          </FaqItem>
+
+          <FaqItem q="Is MPP production-ready?">
+            <p>MPP integration is experimental. The x402 protocol is fully production-ready and recommended for most use cases. MPP support will be fully validated as the Stellar MPP SDK stabilizes.</p>
+          </FaqItem>
+
+          <FaqItem q="How do I deploy?">
+            <p>Deploy your MCP server anywhere Node.js runs (Railway, Fly.io, AWS, etc.). The dashboard deploys to Vercel. Set <code className="text-emerald-400 bg-white/5 px-1 rounded text-xs">TOLL_EARNINGS_API_URL</code> on Vercel to connect the dashboard to your server&apos;s earnings API if they&apos;re on different hosts.</p>
+          </FaqItem>
+
+          <FaqItem q="What are the known limitations?">
+            <ul className="list-disc list-inside space-y-1 mt-1">
+              <li>Rate limiter is in-memory (resets on server restart)</li>
+              <li>SQLite earnings DB works for single-server deployments</li>
+              <li>Streaming payment support is not yet available</li>
+              <li>Express-only middleware (other frameworks need adapters)</li>
+            </ul>
+          </FaqItem>
         </div>
-
-        <SubTitle>Running Tests</SubTitle>
-        <CodeBlock code={`# All tests (33 total)
-pnpm -r test
-
-# Individual packages
-pnpm --filter @rajkaria123/toll-stellar test    # 8 tests
-pnpm --filter @rajkaria123/toll-gateway test    # 15 tests
-pnpm --filter demo-server test      # 10 integration tests`} language="bash" />
       </section>
+
+        </div>{/* end Content */}
+      </div>{/* end flex */}
     </main>
   )
 }
