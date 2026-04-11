@@ -127,6 +127,7 @@ const result = await toll.callTool("search_competitors", { query: "CRM" })
 - **Next.js 15** — Dashboard and landing page
 - **Express** — MCP server runtime
 
+
 ## License
 
 MIT
