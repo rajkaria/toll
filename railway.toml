@@ -1,0 +1,9 @@
+[build]
+dockerfilePath = "apps/demo-server/Dockerfile"
+watchPatterns = ["apps/demo-server/**", "packages/**"]
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
