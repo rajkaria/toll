@@ -2,7 +2,7 @@
 
 **You built an MCP server. Here's how to get paid.**
 
-[tollpay.xyz](https://tollpay.xyz) · [Live Demo](https://toll-demo-server-production.up.railway.app/mcp) · [Docs](https://tollpay.xyz/docs)
+[tollpay.xyz](https://tollpay.xyz) · [Live Demo](https://api.tollpay.xyz/mcp) · [Docs](https://tollpay.xyz/docs)
 
 ---
 
@@ -47,7 +47,7 @@ Paste this into Claude Desktop, Cursor, or any MCP client:
 {
   "mcpServers": {
     "watchdog": {
-      "url": "https://toll-demo-server-production.up.railway.app/mcp",
+      "url": "https://api.tollpay.xyz/mcp",
       "transport": "streamable-http"
     }
   }
@@ -100,7 +100,7 @@ For agents that need to pay for tools automatically:
 import { TollClient } from "@rajkaria123/toll-sdk"
 
 const toll = new TollClient({
-  serverUrl: "https://toll-demo-server-production.up.railway.app",
+  serverUrl: "https://api.tollpay.xyz",
   secretKey: "S...",
   budget: { maxPerCall: "0.10", maxDaily: "5.00" },
 })
