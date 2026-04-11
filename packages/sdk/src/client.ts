@@ -125,9 +125,11 @@ export class TollClient {
 
         const signer = createEd25519Signer(this.config.secretKey!)
         const stellarScheme = new ExactStellarScheme(signer)
+        // Detect network from 402 response (supports both testnet and mainnet)
+        const network = (paymentRequired as { accepts?: Array<{ network?: string }> })?.accepts?.[0]?.network ?? "stellar:pubnet"
         const client = x402Client.fromConfig({
           schemes: [{
-            network: "stellar:testnet",
+            network,
             client: stellarScheme,
           }],
         })

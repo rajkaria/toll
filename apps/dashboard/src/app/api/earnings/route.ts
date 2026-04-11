@@ -100,8 +100,30 @@ function tryGetLiveData() {
   }
 }
 
+async function tryFetchRemote(): Promise<Record<string, unknown> | null> {
+  const url = process.env.TOLL_EARNINGS_API_URL
+  if (!url) return null
+
+  try {
+    const res = await fetch(url, {
+      headers: { "Accept": "application/json" },
+      // Revalidate on every request — earnings change frequently
+      cache: "no-store",
+    })
+    if (!res.ok) return null
+    return (await res.json()) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
 export async function GET() {
-  // Try live SQLite data first, fall back to demo data on Vercel/production
+  // Priority: remote API (Vercel → Railway) > local SQLite > empty state
+  const remoteData = await tryFetchRemote()
+  if (remoteData) {
+    return NextResponse.json(remoteData, { headers: { "Cache-Control": "no-store" } })
+  }
+
   const liveData = tryGetLiveData()
   const data = liveData ?? getEmptyData()
 

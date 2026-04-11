@@ -8,6 +8,7 @@
     "setup-wallet": "tsx setup-wallet.ts"
   },
   "dependencies": {
+    "@rajkaria123/toll-sdk": "workspace:*",
     "@rajkaria123/toll-stellar": "workspace:*",
     "@x402/core": "^2.8.0",
     "@x402/stellar": "^2.8.0",

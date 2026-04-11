@@ -70,6 +70,11 @@ export function tollMiddleware(config: TollConfig): RequestHandler {
     }
 
     const toolName = req.body.params.name
+    // Validate tool name: alphanumeric, underscores, hyphens only (prevent injection)
+    if (typeof toolName !== "string" || !/^[a-zA-Z0-9_-]+$/.test(toolName)) {
+      res.status(400).json({ error: "Invalid tool name" })
+      return
+    }
     const toolConfig = config.tools[toolName]
 
     // Unknown tool or explicitly free — pass through

@@ -156,6 +156,47 @@ export class EarningsTracker {
     }
   }
 
+  getAnalytics(): {
+    earningsPerDay: { day: string; earnings: number }[]
+    callsPerHour: { hour: string; calls: number }[]
+    topCallers: { caller: string; calls: number; total: number }[]
+  } {
+    const earningsPerDay = this.db
+      .prepare(
+        `SELECT date(created_at/1000, 'unixepoch') as day, COALESCE(SUM(amount_usdc),0) as earnings
+         FROM transactions GROUP BY day ORDER BY day DESC LIMIT 7`
+      )
+      .all() as { day: string; earnings: number }[]
+
+    const oneDayAgo = Date.now() - 86400000
+    const callsPerHour = this.db
+      .prepare(
+        `SELECT strftime('%H', created_at/1000, 'unixepoch') as hour, COUNT(*) as calls
+         FROM transactions WHERE created_at >= ? GROUP BY hour ORDER BY hour`
+      )
+      .all(oneDayAgo) as { hour: string; calls: number }[]
+
+    const topCallers = this.db
+      .prepare(
+        `SELECT caller, COUNT(*) as calls, COALESCE(SUM(amount_usdc),0) as total
+         FROM transactions WHERE caller IS NOT NULL GROUP BY caller ORDER BY total DESC LIMIT 5`
+      )
+      .all() as { caller: string; calls: number; total: number }[]
+
+    return { earningsPerDay: earningsPerDay.reverse(), callsPerHour, topCallers }
+  }
+
+  /** Return the full earnings data structure expected by the dashboard */
+  getFullEarningsData() {
+    return {
+      stats: this.getStats(),
+      byTool: this.getByTool(),
+      recent: this.getRecent(),
+      protocolSplit: this.getProtocolSplit(),
+      analytics: this.getAnalytics(),
+    }
+  }
+
   close() {
     this.db.close()
   }

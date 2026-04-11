@@ -3,6 +3,7 @@ import express from "express"
 import cors from "cors"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { tollMiddleware, loadConfig, withToll } from "@rajkaria123/toll-gateway"
+import { EarningsTracker } from "@rajkaria123/toll-stellar"
 import { createMcpServer } from "./server.js"
 import path from "path"
 import { fileURLToPath } from "url"
@@ -31,6 +32,19 @@ async function main() {
     })
     await mcpServer.connect(transport)
     await transport.handleRequest(req, res, req.body)
+  })
+
+  // Earnings API — exposes EarningsTracker data for the remote dashboard
+  const earnings = new EarningsTracker(config.dataDir)
+
+  app.get("/api/v1/earnings", (_req, res) => {
+    try {
+      const data = earnings.getFullEarningsData()
+      res.json(data)
+    } catch (err) {
+      console.error("[Toll] Earnings API error:", err)
+      res.status(500).json({ error: "Failed to fetch earnings data" })
+    }
   })
 
   app.get("/health", (_req, res) => {

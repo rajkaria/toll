@@ -1,219 +1,232 @@
+#!/usr/bin/env npx tsx
 /**
- * Toll Demo Agent
+ * TollPay Demo Agent
  *
- * Demonstrates calling monetized MCP tools with automatic x402 payments.
- * Set environment variables before running:
- *   AGENT_SECRET_KEY=S...  (Stellar secret key for paying)
- *   SERVER_URL=http://localhost:3002  (optional, defaults shown)
+ * Demonstrates the full x402 payment flow:
+ *   1. Call a FREE tool (health_check) — no payment needed
+ *   2. Call a PAID tool (search_competitors, $0.01 USDC) — 402 -> sign -> retry -> result
+ *   3. Print spending summary with Stellar transaction details
+ *
+ * Usage:
+ *   AGENT_SECRET_KEY=S... npx tsx scripts/demo-agent.ts
+ *
+ * The AGENT_SECRET_KEY must be a Stellar secret key for an account
+ * funded with USDC on Stellar mainnet.
  */
-import { createEd25519Signer, USDC_TESTNET_ADDRESS } from "@x402/stellar"
-import { x402Client, x402HTTPClient } from "@x402/core/client"
-import { ExactStellarScheme } from "@x402/stellar"
 
-const SERVER_URL = process.env.SERVER_URL ?? "http://localhost:3002"
-const MCP_ENDPOINT = `${SERVER_URL}/mcp`
+import { TollClient } from "../packages/sdk/src/client.js"
+import type { ToolCallResult, SpendingReport } from "../packages/sdk/src/types.js"
+
+// ── Configuration ──────────────────────────────────────────────────────────
+
+const SERVER_URL = "https://api.tollpay.xyz"
 const SECRET_KEY = process.env.AGENT_SECRET_KEY
 
-function bold(s: string) {
-  return `\x1b[1m${s}\x1b[0m`
-}
-function green(s: string) {
-  return `\x1b[32m${s}\x1b[0m`
-}
-function yellow(s: string) {
-  return `\x1b[33m${s}\x1b[0m`
-}
-function red(s: string) {
-  return `\x1b[31m${s}\x1b[0m`
-}
-function dim(s: string) {
-  return `\x1b[2m${s}\x1b[0m`
+// ── ANSI helpers ───────────────────────────────────────────────────────────
+
+const bold = (s: string) => `\x1b[1m${s}\x1b[0m`
+const green = (s: string) => `\x1b[32m${s}\x1b[0m`
+const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`
+const red = (s: string) => `\x1b[31m${s}\x1b[0m`
+const dim = (s: string) => `\x1b[2m${s}\x1b[0m`
+const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`
+
+function separator() {
+  console.log(dim("━".repeat(50)))
 }
 
-/** Parse JSON from an SSE response body */
-async function parseSseResponse(resp: Response): Promise<unknown> {
-  const text = await resp.text()
-  for (const line of text.split("\n")) {
-    const trimmed = line.trim()
-    if (trimmed.startsWith("data:")) {
-      const jsonStr = trimmed.slice(5).trim()
-      if (jsonStr) return JSON.parse(jsonStr)
-    }
-  }
-  // Fallback: try parsing the whole body as JSON
-  try { return JSON.parse(text) } catch { return null }
-}
-
-interface McpCallResult {
-  paid: boolean
-  protocol?: string
-  txHash?: string
-  result?: unknown
-  error?: string
-}
-
-async function callMcpTool(
-  toolName: string,
-  args: Record<string, unknown>,
-  httpClient: x402HTTPClient | null
-): Promise<McpCallResult> {
-  const body = JSON.stringify({
-    jsonrpc: "2.0",
-    id: 1,
-    method: "tools/call",
-    params: { name: toolName, arguments: args },
-  })
-
-  // First attempt — no payment header
-  const resp1 = await fetch(MCP_ENDPOINT, {
-    method: "POST",
-    headers: { "content-type": "application/json", "accept": "application/json, text/event-stream" },
-    body,
-  })
-
-  if (resp1.status === 200) {
-    const data = await parseSseResponse(resp1)
-    return { paid: false, result: data }
-  }
-
-  if (resp1.status === 402) {
-    if (!httpClient) {
-      const errBody = await resp1.json()
-      return { paid: false, error: `Payment required but no wallet configured: ${JSON.stringify(errBody)}` }
-    }
-
-    const respBody = await resp1.json()
-
-    // Extract PaymentRequired from the response body header field
-    const paymentRequired = httpClient.getPaymentRequiredResponse(
-      (name) => resp1.headers.get(name),
-      respBody
-    )
-
-    // Create payment payload
-    let paymentPayload: unknown
-    try {
-      paymentPayload = await httpClient.createPaymentPayload(paymentRequired)
-    } catch (e) {
-      return { paid: false, error: `Failed to create payment: ${e}` }
-    }
-
-    // Encode the payment header
-    const sigHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload as Parameters<typeof httpClient.encodePaymentSignatureHeader>[0])
-
-    // Retry with payment signature
-    const resp2 = await fetch(MCP_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        ...sigHeaders,
-      },
-      body,
-    })
-
-    if (resp2.status === 200) {
-      const data = await parseSseResponse(resp2)
-      const settleResp = httpClient.getPaymentSettleResponse((name) => resp2.headers.get(name))
-      return {
-        paid: true,
-        protocol: "x402",
-        txHash: (settleResp as Record<string, unknown>)?.transaction as string | undefined,
-        result: data,
-      }
-    }
-
-    const errBody = await resp2.json()
-    return { paid: false, error: `Payment retry failed (${resp2.status}): ${JSON.stringify(errBody)}` }
-  }
-
-  return { paid: false, error: `Unexpected status ${resp1.status}` }
-}
-
-function printResult(callResult: McpCallResult) {
-  if (callResult.error) {
-    console.log(red(`  ✗ Error: ${callResult.error}`))
-    return
-  }
-  if (callResult.paid) {
-    console.log(green(`  ✓ Payment sent via ${callResult.protocol?.toUpperCase()}`))
-    if (callResult.txHash) {
-      console.log(dim(`    tx: ${callResult.txHash}`))
-    }
-  } else {
-    console.log(green(`  ✓ Free (no payment required)`))
-  }
-  const result = callResult.result as Record<string, unknown>
-  const content = (result?.result as Record<string, unknown>)?.content as Array<{ text: string }> | undefined
-  if (content?.[0]?.text) {
-    try {
-      const parsed = JSON.parse(content[0].text)
-      console.log(dim(`  Response: ${JSON.stringify(parsed, null, 2).split("\n").slice(0, 8).join("\n  ")}`))
-    } catch {
-      console.log(dim(`  Response: ${content[0].text.slice(0, 200)}`))
-    }
-  }
-}
+// ── Main ───────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(bold("\n=== Toll Demo Agent — MCP Payment Gateway ===\n"))
-  console.log(`Server: ${SERVER_URL}`)
+  console.log("")
+  console.log(bold("🤖 TollPay Demo Agent"))
+  console.log(dim("━".repeat(50)))
+  console.log("")
+  console.log(`  Server:  ${cyan(SERVER_URL)}`)
+  console.log(`  Wallet:  ${SECRET_KEY ? green("configured") : yellow("not set")}`)
+  console.log("")
 
-  // Set up x402 client if wallet provided
-  let httpClient: x402HTTPClient | null = null
-
-  if (SECRET_KEY) {
-    console.log(green("Wallet configured — x402 payments enabled\n"))
-    const signer = createEd25519Signer(SECRET_KEY)
-    const stellarScheme = ExactStellarScheme
-    const client = x402Client.fromConfig({
-      schemes: [
-        {
-          network: "stellar:testnet",
-          client: await stellarScheme.createClient({
-            signer,
-            assetAddress: USDC_TESTNET_ADDRESS,
-          }),
-        },
-      ],
-    })
-    httpClient = new x402HTTPClient(client)
-  } else {
-    console.log(yellow("No AGENT_SECRET_KEY set — paid calls will show 402 without paying\n"))
+  if (!SECRET_KEY) {
+    console.log(red("ERROR: AGENT_SECRET_KEY environment variable is required."))
+    console.log(dim("  This must be a Stellar secret key (starts with S...)"))
+    console.log(dim("  for an account funded with USDC on Stellar mainnet."))
+    console.log("")
+    console.log(dim("  Usage: AGENT_SECRET_KEY=S... npx tsx scripts/demo-agent.ts"))
+    console.log("")
+    process.exit(1)
   }
 
-  // ── Tool 1: health_check (FREE) ────────────────────────────────────────────
-  console.log(bold("1. health_check") + " (FREE)")
-  const health = await callMcpTool("health_check", {}, httpClient)
-  printResult(health)
+  // Initialize TollClient with budget guard
+  const toll = new TollClient({
+    serverUrl: SERVER_URL,
+    secretKey: SECRET_KEY,
+    autoRetry: true,
+    budget: {
+      maxPerCall: "1.00",   // max $1 per call (safety)
+      maxDaily: "5.00",     // max $5/day (safety)
+    },
+  })
 
-  // ── Tool 2: search_competitors ($0.01 x402) ────────────────────────────────
-  console.log(bold("\n2. search_competitors") + " ($0.01 USDC via x402)")
-  const search = await callMcpTool("search_competitors", { query: "project management tools" }, httpClient)
-  printResult(search)
+  // Listen for events to show real-time feedback
+  toll.on((event, data) => {
+    if (event === "payment") {
+      console.log(green(`  💰 Payment signed & settled via ${data.protocol} — $${data.amount} USDC`))
+    }
+    if (event === "error") {
+      console.log(red(`  ❌ Error: ${data.error}`))
+    }
+    if (event === "budget_warning") {
+      console.log(yellow(`  ⚠️  Budget warning: ${data.reason}`))
+    }
+  })
 
-  // ── Tool 3: analyze_sentiment ($0.02 x402) ─────────────────────────────────
-  console.log(bold("\n3. analyze_sentiment") + " ($0.02 USDC via x402 + Claude AI)")
-  const sentiment = await callMcpTool(
-    "analyze_sentiment",
-    { url: "https://example.com" },
-    httpClient
-  )
-  printResult(sentiment)
+  // ── Step 1: Discover available tools ─────────────────────────────────────
 
-  // ── Tool 4: compare_products ($0.05 MPP) ──────────────────────────────────
-  console.log(bold("\n4. compare_products") + " ($0.05 USDC via MPP)")
-  console.log(dim("  Note: MPP payments require the full Stellar MPP client stack"))
-  const compare = await callMcpTool(
-    "compare_products",
-    { product_a: "GitHub", product_b: "GitLab" },
-    httpClient
-  )
-  printResult(compare)
+  console.log(bold("Step 0: Discovering available tools..."))
+  try {
+    const manifest = await toll.discoverTools()
+    console.log(green(`  ✅ Found ${manifest.count} tools on ${manifest.network}:`))
+    for (const tool of manifest.tools) {
+      const price = tool.free ? "FREE" : `$${tool.price} ${tool.currency}`
+      console.log(dim(`     • ${tool.name} — ${price}`))
+    }
+  } catch (err) {
+    console.log(yellow(`  ⚠️  Could not discover tools: ${err}`))
+  }
+  console.log("")
 
-  console.log(bold("\n=== Done ===\n"))
+  // ── Step 2: Call FREE tool (health_check) ────────────────────────────────
+
+  separator()
+  console.log(bold("Step 1: Calling FREE tool (health_check)..."))
+  console.log("")
+
+  const healthResult = await toll.callTool("health_check", {})
+
+  if (healthResult.success) {
+    const data = extractToolResponse(healthResult)
+    console.log(green(`  ✅ Free tool returned:`))
+    console.log(cyan(`     ${JSON.stringify(data, null, 2).split("\n").join("\n     ")}`))
+  } else {
+    console.log(red(`  ❌ Failed: ${healthResult.error}`))
+  }
+  console.log("")
+
+  // ── Step 3: Call PAID tool (search_competitors, $0.01 USDC) ──────────────
+
+  separator()
+  console.log(bold("Step 2: Calling PAID tool (search_competitors, $0.01 USDC)..."))
+  console.log(dim("  → First request will get HTTP 402 Payment Required"))
+  console.log(dim("  → TollClient auto-signs USDC payment on Stellar"))
+  console.log(dim("  → Retries with x402 payment header"))
+  console.log("")
+
+  const searchResult = await toll.callTool("search_competitors", {
+    query: "AI agent frameworks",
+  })
+
+  if (searchResult.success) {
+    console.log(green(`  ✅ Tool returned successfully!`))
+    console.log(dim(`     Paid: ${searchResult.paid ? `$${searchResult.amount} USDC via ${searchResult.protocol}` : "no"}`))
+    if (searchResult.txHash) {
+      console.log(cyan(`     🔗 TX: ${searchResult.txHash}`))
+      console.log(dim(`     Verify: https://stellar.expert/explorer/public/tx/${searchResult.txHash}`))
+    }
+    const data = extractToolResponse(searchResult)
+    if (data) {
+      const preview = JSON.stringify(data, null, 2)
+      const lines = preview.split("\n")
+      const shown = lines.slice(0, 12).join("\n     ")
+      console.log(dim(`     Response preview:`))
+      console.log(dim(`     ${shown}`))
+      if (lines.length > 12) {
+        console.log(dim(`     ... (${lines.length - 12} more lines)`))
+      }
+    }
+  } else {
+    console.log(red(`  ❌ Failed: ${searchResult.error}`))
+    if (!searchResult.paid && searchResult.amount) {
+      console.log(yellow(`     Price was: $${searchResult.amount} USDC`))
+    }
+  }
+  console.log("")
+
+  // ── Spending Summary ─────────────────────────────────────────────────────
+
+  separator()
+  console.log(bold("📊 Spending Summary"))
+  console.log("")
+
+  const spending: SpendingReport = toll.getSpending()
+
+  for (const [tool, info] of Object.entries(spending.byTool)) {
+    if (info.spent === 0) {
+      console.log(`  ${tool}: ${green("FREE")}`)
+    } else {
+      console.log(`  ${tool}: ${yellow(`$${info.spent.toFixed(2)} USDC`)} (${info.calls} call${info.calls > 1 ? "s" : ""})`)
+    }
+  }
+
+  console.log("")
+  console.log(bold(`  Total: $${spending.totalSpent.toFixed(2)} USDC`))
+  console.log(dim(`  Calls: ${spending.callCount}`))
+
+  if (spending.dailyBudget) {
+    console.log(dim(`  Daily budget remaining: $${spending.dailyRemaining?.toFixed(2)} / $${spending.dailyBudget.toFixed(2)}`))
+  }
+
+  if (searchResult.txHash) {
+    console.log("")
+    console.log(bold("🔗 Stellar Transaction"))
+    console.log(cyan(`  ${searchResult.txHash}`))
+    console.log(dim(`  https://stellar.expert/explorer/public/tx/${searchResult.txHash}`))
+  }
+
+  console.log("")
+  separator()
+  console.log(green(bold("✅ Demo complete!")))
+  console.log("")
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Extract the tool response from the MCP JSON-RPC result.
+ * The TollClient returns the parsed SSE/JSON body which wraps
+ * the actual content in result.content[0].text.
+ */
+function extractToolResponse(callResult: ToolCallResult): unknown {
+  const data = callResult.data as Record<string, unknown> | undefined
+  if (!data) return null
+
+  // MCP JSON-RPC envelope: { result: { content: [{ type: "text", text: "..." }] } }
+  const result = data.result as Record<string, unknown> | undefined
+  const content = result?.content as Array<{ type: string; text: string }> | undefined
+  if (content?.[0]?.text) {
+    try {
+      return JSON.parse(content[0].text)
+    } catch {
+      return content[0].text
+    }
+  }
+
+  // Direct content array (some responses)
+  const directContent = data.content as Array<{ type: string; text: string }> | undefined
+  if (directContent?.[0]?.text) {
+    try {
+      return JSON.parse(directContent[0].text)
+    } catch {
+      return directContent[0].text
+    }
+  }
+
+  return data
+}
+
+// ── Run ────────────────────────────────────────────────────────────────────
+
 main().catch((err) => {
-  console.error(red(`Fatal: ${err.message}`))
+  console.error(red(`\n❌ Fatal error: ${err.message || err}`))
+  if (err.stack) console.error(dim(err.stack))
   process.exit(1)
 })

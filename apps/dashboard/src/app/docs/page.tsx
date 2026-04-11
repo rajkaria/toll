@@ -3,10 +3,12 @@ import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET } from "@/lib
 
 const TOC = [
   { id: "overview", label: "Overview" },
+  { id: "why-stellar", label: "Why Stellar" },
   { id: "quick-start", label: "Quick Start" },
   { id: "configuration", label: "Configuration" },
   { id: "payment-flows", label: "Payment Flows" },
   { id: "api-reference", label: "API Reference" },
+  { id: "agent-sdk", label: "Agent SDK" },
   { id: "earnings-tracking", label: "Earnings Tracking" },
   { id: "security", label: "Security" },
   { id: "deployment", label: "Deployment" },
@@ -109,6 +111,69 @@ export default function DocsPage() {
 
       <Divider />
 
+      {/* Why Stellar */}
+      <Anchor id="why-stellar" />
+      <section>
+        <SectionTitle>Why Stellar</SectionTitle>
+        <Prose>
+          AI agent micropayments have specific requirements that no other blockchain meets. Toll runs on Stellar because it is the only network where a $0.001 tool call is economically viable.
+        </Prose>
+
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden my-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs text-gray-500 uppercase tracking-widest border-b border-white/5">
+                <th className="px-5 py-3.5 text-left font-medium">Requirement</th>
+                <th className="px-5 py-3.5 text-left font-medium">Why It Matters</th>
+                <th className="px-5 py-3.5 text-left font-medium">Stellar</th>
+              </tr>
+            </thead>
+            <tbody className="text-xs">
+              {[
+                ["Sub-second finality", "Agents can't wait 12s for Ethereum blocks", "3-5 second settlement"],
+                ["Near-zero fees", "A $0.001 tool call must be profitable", "~$0.00001 per tx"],
+                ["Native USDC", "No bridge risk, no wrapped tokens", "First-class Stellar asset"],
+                ["x402 + MPP support", "Both payment protocols required", "Both protocols live on Stellar"],
+              ].map(([req, why, stellar]) => (
+                <tr key={req} className="border-b border-white/5 last:border-0">
+                  <td className="px-5 py-3 text-emerald-400 font-medium">{req}</td>
+                  <td className="px-5 py-3 text-gray-400">{why}</td>
+                  <td className="px-5 py-3 text-white">{stellar}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <InfoBox title="Zero Blockchain Complexity">
+          Toll abstracts all Stellar internals. As a developer, you never configure wallets, sign transactions,
+          or understand consensus. You run <code className="text-emerald-400">npm install @rajkaria123/toll-gateway</code>,
+          add 3 lines of config, and start earning USDC. The monetary layer is Stellar. The developer experience is Toll.
+          Build your agent however you want — the payment rail is handled.
+        </InfoBox>
+
+        <SubTitle>How Toll Enables Any Agent on Stellar</SubTitle>
+        <Prose>
+          Toll is not an SDK you rebuild your agent around. It is middleware you add to your existing MCP server.
+          Your tools, your logic, your framework — nothing changes. Toll sits in front and handles the money.
+        </Prose>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+          {[
+            { step: "1", title: "Build Your Agent", desc: "Use any language, any framework, any MCP server implementation. Toll doesn't care how your tools work." },
+            { step: "2", title: "Add Toll", desc: "npm install, add toll.config.json with your tool prices. One middleware line in your Express server." },
+            { step: "3", title: "Earn on Stellar", desc: "Every paid tool call settles in USDC on Stellar mainnet. Track earnings in real-time on the dashboard." },
+          ].map((item) => (
+            <div key={item.step} className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+              <span className="inline-block w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center justify-center mb-3">{item.step}</span>
+              <h4 className="text-sm font-semibold text-white mb-1">{item.title}</h4>
+              <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Divider />
+
       {/* Quick Start */}
       <Anchor id="quick-start" />
       <section>
@@ -151,7 +216,7 @@ TOLL_SERVER_SECRET=S...your_server_secret_key
 TOLL_SERVER_ADDRESS=G...your_server_public_key
 ANTHROPIC_API_KEY=sk-ant-...  # optional, for Claude-powered tools
 TOLL_DATA_DIR=~/.toll
-X402_FACILITATOR_URL=https://x402-facilitator.stellar.org`} language="bash" filename=".env" />
+X402_FACILITATOR_URL=https://channels.openzeppelin.com/x402`} language="bash" filename=".env" />
 
         <SubTitle>6. Connect an MCP client</SubTitle>
         <CodeBlock code={CONNECT_SNIPPET} language="json" filename="mcp-client-config.json" />
@@ -377,6 +442,79 @@ const result = await verifier.settle(paymentSignatureHeader, requirements)
             <CodeBlock code={api.example} language="typescript" />
           </div>
         ))}
+      </section>
+
+      <Divider />
+
+      {/* Agent SDK */}
+      <Anchor id="agent-sdk" />
+      <section>
+        <SectionTitle>Agent SDK</SectionTitle>
+        <Prose>
+          The Agent SDK handles the full payment lifecycle for AI agents: discovers tools, detects 402 responses,
+          signs USDC payments on Stellar, retries requests, and tracks spending — all automatically.
+        </Prose>
+
+        <SubTitle>Install</SubTitle>
+        <CodeBlock code="npm install @rajkaria123/toll-sdk" language="bash" />
+
+        <SubTitle>Basic Usage</SubTitle>
+        <CodeBlock code={`import { TollClient } from "@rajkaria123/toll-sdk"
+
+const toll = new TollClient({
+  serverUrl: "https://api.tollpay.xyz",
+  secretKey: "S...",  // Stellar Ed25519 secret key
+  budget: {
+    maxPerCall: "0.10",  // Max $0.10 per tool call
+    maxDaily: "5.00",    // Max $5/day total spending
+  },
+  autoRetry: true,  // Auto-pay on 402 (default: true)
+})
+
+// Free tool — no payment
+const health = await toll.callTool("health_check")
+
+// Paid tool — auto-handles 402 → sign → retry
+const result = await toll.callTool("search_competitors", {
+  query: "AI agent frameworks"
+})
+// { success: true, data: {...}, paid: true, amount: "0.01", protocol: "x402" }`} language="typescript" />
+
+        <SubTitle>Discover Available Tools</SubTitle>
+        <CodeBlock code={`const manifest = await toll.discoverTools()
+// { tools: [
+//   { name: "health_check", price: "0", free: true },
+//   { name: "search_competitors", price: "0.01", currency: "USDC", paymentMode: "x402" }
+// ], network: "mainnet" }`} language="typescript" />
+
+        <SubTitle>Track Spending</SubTitle>
+        <CodeBlock code={`const report = toll.getSpending()
+// {
+//   totalSpent: 0.03,
+//   callCount: 2,
+//   byTool: { search_competitors: { spent: 0.01, calls: 1 }, analyze_sentiment: { spent: 0.02, calls: 1 } },
+//   dailyBudget: 5.00,
+//   dailyRemaining: 4.97
+// }`} language="typescript" />
+
+        <SubTitle>Event System</SubTitle>
+        <CodeBlock code={`toll.on("payment", (event, data) => {
+  console.log(\`Paid \${data.amount} USDC for \${data.tool} via \${data.protocol}\`)
+})
+
+toll.on("budget_warning", (event, data) => {
+  console.log(\`Budget warning: \${data.remaining} USDC remaining today\`)
+})
+
+toll.on("error", (event, data) => {
+  console.error(\`Payment failed: \${data.error}\`)
+})`} language="typescript" />
+
+        <InfoBox title="Budget Safety">
+          The SDK enforces hard budget limits. If a tool call would exceed your per-call or daily budget,
+          it returns an error immediately without attempting payment. This prevents runaway spending
+          from autonomous agents.
+        </InfoBox>
       </section>
 
       <Divider />
