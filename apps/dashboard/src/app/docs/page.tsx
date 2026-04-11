@@ -1,8 +1,9 @@
 import { CodeBlock } from "@/components/shared/CodeBlock"
-import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET, PROXY_SNIPPET, PROXY_CONFIG_SNIPPET, REGISTRY_SNIPPET, WALLET_SNIPPET } from "@/lib/snippets"
+import { QUICK_START_SNIPPET, TOLL_CONFIG_SNIPPET, CONNECT_SNIPPET, PROXY_SNIPPET, PROXY_CONFIG_SNIPPET, REGISTRY_SNIPPET, WALLET_SNIPPET, GETTING_STARTED_SNIPPET } from "@/lib/snippets"
 
 const TOC = [
-  { id: "quick-start", label: "Quick Start" },
+  { id: "first-payment", label: "Make your first payment" },
+  { id: "quick-start", label: "Quick Start (server)" },
   { id: "how-it-works", label: "How Toll Works" },
   { id: "configuration", label: "Configuration" },
   { id: "toll-proxy", label: "Toll Proxy" },
@@ -83,10 +84,37 @@ export default function DocsPage() {
         {/* Content */}
         <div className="flex-1 min-w-0">
 
+      {/* ── Make your first payment ── */}
+      <Anchor id="first-payment" />
+      <section>
+        <SectionTitle>Make your first payment</SectionTitle>
+        <Prose>
+          Pay for a real MCP tool call on Stellar mainnet in under 5 minutes. No server setup required — use the live demo server at <code className="text-emerald-400 bg-white/5 px-1.5 py-0.5 rounded text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>api.tollpay.xyz</code>.
+        </Prose>
+
+        <SubTitle>1. Install the SDK</SubTitle>
+        <CodeBlock code="npm install @rajkaria123/toll-sdk" language="bash" filename="terminal" />
+
+        <SubTitle>2. Create a wallet, fund it, call a tool</SubTitle>
+        <Prose>
+          Run this once to create a Stellar keypair. Fund your address with at least <strong className="text-white">0.05 USDC</strong> on Stellar mainnet, then call any paid tool — payment is handled automatically.
+        </Prose>
+        <CodeBlock code={GETTING_STARTED_SNIPPET} language="typescript" filename="quickstart.ts" />
+
+        <InfoBox title="How to get USDC on Stellar mainnet">
+          Send USDC to your wallet address from any Stellar-compatible exchange (Coinbase, Kraken, Binance) or use the{" "}
+          <a href="/fund" className="text-emerald-400 underline underline-offset-2">Funding Guide</a>.
+          The USDC asset ID on Stellar mainnet is <code className="text-emerald-400 text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI</code>.
+          You also need ~1 XLM for the account reserve.
+        </InfoBox>
+      </section>
+
+      <Divider />
+
       {/* ── Quick Start ── */}
       <Anchor id="quick-start" />
       <section>
-        <SectionTitle>Quick Start</SectionTitle>
+        <SectionTitle>Quick Start (server)</SectionTitle>
         <Prose>
           Three steps to start earning from your MCP tools.
         </Prose>

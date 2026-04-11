@@ -135,3 +135,32 @@ const { publicKey, secretKey } = wallet.getOrCreate("mainnet")
 
 // Get funding instructions
 console.log(wallet.fundingInstructions(publicKey))`
+
+export const GETTING_STARTED_SNIPPET = `// 1. Install
+// npm install @rajkaria123/toll-sdk
+
+// 2. Create a wallet (saved to ~/.toll/wallet.json)
+import { WalletManager, TollClient } from "@rajkaria123/toll-sdk"
+
+const wm = new WalletManager()
+const wallet = wm.getOrCreate("mainnet")
+console.log("Your address:", wallet.publicKey)
+// → Fund this address with USDC on Stellar mainnet
+//   (send to USDC asset: CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI)
+//   Minimum: 0.05 USDC for 5 test calls at api.tollpay.xyz
+
+// 3. Call a paid tool — auto-signs the 402 and pays
+const toll = new TollClient({
+  serverUrl: "https://api.tollpay.xyz",
+  secretKey: wallet.secretKey,
+  budget: { maxPerCall: "0.05", maxDaily: "1.00" },
+})
+
+const result = await toll.callTool("search_competitors", { query: "project management" })
+if (result.success) {
+  console.log(result.data)          // tool output
+  console.log(result.paid)          // true — 0.01 USDC paid on Stellar mainnet
+}
+
+console.log(toll.getSpending())
+// { totalSpent: 0.01, callCount: 1, dailyRemaining: 0.99 }`
