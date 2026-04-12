@@ -19,6 +19,8 @@ export interface TollConfig {
   mpp?: {
     enabled: boolean
   }
+  secretKey?: string // Stellar secret key for self-hosted settlement (no external facilitator)
+  rpcUrl?: string // Soroban RPC URL for mainnet (required for self-hosted settlement)
   dataDir?: string // path to SQLite dir, default ~/.toll
   /** Spending policies — Toll's trust primitive */
   spendingPolicy?: {

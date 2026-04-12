@@ -41,6 +41,8 @@ const TollConfigSchema = z.object({
       enabled: z.boolean(),
     })
     .optional(),
+  secretKey: z.string().optional(),
+  rpcUrl: z.string().optional(),
   dataDir: z.string().optional(),
   spendingPolicy: SpendingPolicySchema,
   apiKeys: ApiKeySchema,
@@ -51,7 +53,10 @@ export function validateConfig(raw: unknown): TollConfig {
 }
 
 export function loadConfig(configPath: string): TollConfig {
-  const raw = JSON.parse(fs.readFileSync(configPath, "utf-8")) as unknown
+  const raw = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Record<string, unknown>
+  // Allow env var overrides for secrets (never stored in config files)
+  if (process.env.TOLL_SECRET_KEY && !raw.secretKey) raw.secretKey = process.env.TOLL_SECRET_KEY
+  if (process.env.TOLL_RPC_URL && !raw.rpcUrl) raw.rpcUrl = process.env.TOLL_RPC_URL
   return validateConfig(raw)
 }
 

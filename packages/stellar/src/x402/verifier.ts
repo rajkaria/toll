@@ -11,12 +11,17 @@ export class X402Verifier {
   private payTo: string
   private network: string
   private asset: string
+  private secretKey?: string
+  private rpcUrl?: string
+  private localFacilitator: unknown | null = null
 
   constructor(config: TollConfig) {
     this.facilitatorUrl = config.facilitatorUrl.replace(/\/$/, "")
     this.payTo = config.payTo
     this.network = config.network === "testnet" ? "stellar:testnet" : "stellar:pubnet"
     this.asset = config.network === "testnet" ? USDC_SAC_TESTNET : USDC_SAC_MAINNET
+    this.secretKey = config.secretKey
+    this.rpcUrl = config.rpcUrl
   }
 
   buildRequirements(
@@ -46,7 +51,64 @@ export class X402Verifier {
     return Buffer.from(JSON.stringify(requirements)).toString("base64")
   }
 
+  /** Get or create the local x402 facilitator (self-hosted settlement) */
+  private async getLocalFacilitator(): Promise<{
+    settle: (payload: unknown, requirements: unknown) => Promise<{ success: boolean; transaction?: string; payer?: string; error?: string }>
+  }> {
+    if (this.localFacilitator) return this.localFacilitator as ReturnType<typeof this.getLocalFacilitator> extends Promise<infer T> ? T : never
+
+    const { createEd25519Signer, ExactStellarScheme } = await import("@x402/stellar")
+    const signer = createEd25519Signer(this.secretKey!)
+    const rpcConfig = this.rpcUrl ? { url: this.rpcUrl } : undefined
+
+    const facilitator = new (ExactStellarScheme as unknown as {
+      new(...args: unknown[]): {
+        settle: (payload: unknown, requirements: unknown) => Promise<{ success: boolean; transaction?: string; payer?: string; error?: string }>
+      }
+    })([signer], { rpcConfig, areFeesSponsored: true })
+
+    this.localFacilitator = facilitator
+    return facilitator
+  }
+
   async settle(
+    paymentSignatureHeader: string,
+    requirements: PaymentRequired
+  ): Promise<X402SettleResult> {
+    // If we have a secret key, use local facilitator (self-hosted settlement)
+    if (this.secretKey) {
+      return this.settleLocal(paymentSignatureHeader, requirements)
+    }
+
+    // Otherwise, use remote facilitator
+    return this.settleRemote(paymentSignatureHeader, requirements)
+  }
+
+  private async settleLocal(
+    paymentSignatureHeader: string,
+    requirements: PaymentRequired
+  ): Promise<X402SettleResult> {
+    try {
+      // Parse the payment signature
+      const parsed = JSON.parse(
+        Buffer.from(paymentSignatureHeader, "base64").toString("utf-8")
+      )
+
+      const facilitator = await this.getLocalFacilitator()
+      const result = await facilitator.settle(parsed, requirements.accepts[0])
+
+      return {
+        success: result.success ?? false,
+        transaction: result.transaction,
+        payer: result.payer,
+        error: result.error,
+      }
+    } catch (err) {
+      return { success: false, error: `Local settle failed: ${String(err)}` }
+    }
+  }
+
+  private async settleRemote(
     paymentSignatureHeader: string,
     requirements: PaymentRequired
   ): Promise<X402SettleResult> {
