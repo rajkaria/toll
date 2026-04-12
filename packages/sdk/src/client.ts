@@ -148,7 +148,8 @@ export class TollClient {
         const { ExactStellarScheme } = await import("@x402/stellar")
 
         const signer = createEd25519Signer(this.config.secretKey!)
-        const stellarScheme = new ExactStellarScheme(signer)
+        const rpcConfig = this.config.rpcUrl ? { url: this.config.rpcUrl } : (process.env.TOLL_RPC_URL ? { url: process.env.TOLL_RPC_URL } : undefined)
+        const stellarScheme = new ExactStellarScheme(signer, rpcConfig)
         // Detect network from 402 response (supports both testnet and mainnet)
         const network = (paymentRequired as { accepts?: Array<{ network?: string }> })?.accepts?.[0]?.network ?? "stellar:pubnet"
         const client = x402Client.fromConfig({

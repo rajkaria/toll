@@ -9,6 +9,7 @@ export interface TollClientConfig {
   autoRetry?: boolean // auto-retry on 402, default true
   autoCreateWallet?: boolean // auto-create Stellar wallet if no secretKey, default true
   network?: "mainnet" | "testnet" // Stellar network, default mainnet
+  rpcUrl?: string // Soroban RPC URL for mainnet (or set TOLL_RPC_URL env var)
 }
 
 export interface TollWallet {

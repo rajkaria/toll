@@ -6,3 +6,6 @@ dist/
 .turbo/
 .next/
 .gstack/
+.claude/
+apps/video/
+docs/superpowers/
