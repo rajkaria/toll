@@ -57,18 +57,20 @@ export class X402Verifier {
   }> {
     if (this.localFacilitator) return this.localFacilitator as ReturnType<typeof this.getLocalFacilitator> extends Promise<infer T> ? T : never
 
-    const { createEd25519Signer, ExactStellarScheme } = await import("@x402/stellar")
+    const { createEd25519Signer } = await import("@x402/stellar")
+    const { x402Facilitator } = await import("@x402/core/facilitator")
+    // Facilitator-side scheme has settle/verify (different from client-side)
+    const { ExactStellarScheme: FacilitatorScheme } = await import("@x402/stellar/exact/facilitator")
     const signer = createEd25519Signer(this.secretKey!)
     const rpcConfig = this.rpcUrl ? { url: this.rpcUrl } : undefined
 
-    const facilitator = new (ExactStellarScheme as unknown as {
-      new(...args: unknown[]): {
-        settle: (payload: unknown, requirements: unknown) => Promise<{ success: boolean; transaction?: string; payer?: string; error?: string }>
-      }
-    })([signer], { rpcConfig, areFeesSponsored: true })
+    // Facilitator scheme takes array of signers + options
+    const scheme = new FacilitatorScheme([signer], { rpcConfig, areFeesSponsored: true })
+    const facilitator = new x402Facilitator()
+    facilitator.register(["stellar:pubnet", "stellar:testnet"], scheme)
 
     this.localFacilitator = facilitator
-    return facilitator
+    return facilitator as unknown as ReturnType<typeof this.getLocalFacilitator> extends Promise<infer T> ? T : never
   }
 
   async settle(
