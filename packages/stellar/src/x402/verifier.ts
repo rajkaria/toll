@@ -97,7 +97,9 @@ export class X402Verifier {
       )
 
       const facilitator = await this.getLocalFacilitator()
-      const result = await facilitator.settle(parsed, requirements.accepts[0])
+      // The facilitator expects (paymentPayload, acceptedRequirements)
+      // The client's payload includes `accepted` field with the requirements it chose
+      const result = await facilitator.settle(parsed, parsed.accepted ?? requirements.accepts[0])
 
       return {
         success: result.success ?? false,
