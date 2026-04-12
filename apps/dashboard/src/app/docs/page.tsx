@@ -347,10 +347,15 @@ export default function DocsPage() {
         <CodeBlock code={`--budget-daily 5.00    # Max $5 USDC per day (default)
 --budget-per-call 0.50  # Max $0.50 per individual call`} language="bash" />
 
-        <SubTitle>Self-Hosted vs Hosted</SubTitle>
+        <SubTitle>Hosted Proxy (no install)</SubTitle>
         <Prose>
-          Run the proxy locally with npx, or deploy it on Railway/Docker for always-on access.
-          The proxy is open source and designed to be self-hosted for full control over your wallet and budget.
+          Use the hosted proxy at <code className="text-emerald-400">proxy.tollpay.xyz</code> — no install, no wallet setup.
+          Just point your MCP client at:
+        </Prose>
+        <CodeBlock code={`https://proxy.tollpay.xyz/mcp?target=https://api.tollpay.xyz/mcp`} language="bash" filename="hosted proxy URL" />
+        <Prose>
+          Or self-host with npx for full control over your wallet and budget.
+          The proxy is open source and deployable on Railway/Docker.
         </Prose>
       </section>
 

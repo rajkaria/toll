@@ -12,7 +12,7 @@ program
   .name("toll-proxy")
   .description("Toll Proxy — auto-pay for MCP tool calls on Stellar")
   .version("0.1.0")
-  .option("-t, --target <url>", "Default target MCP server URL")
+  .option("-t, --target <url>", "Default target MCP server URL", process.env.TOLL_TARGET)
   .option("-k, --key <secret>", "Stellar secret key (S...)")
   .option("-p, --port <port>", "Port to listen on", "3010")
   .option("--budget-daily <amount>", "Max USDC per day", "5.00")

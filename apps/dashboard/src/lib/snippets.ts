@@ -71,8 +71,8 @@ export const TOLL_CONFIG_SNIPPET = `{
 export const CONNECT_SNIPPET = `// Claude Desktop / any MCP client config
 {
   "mcpServers": {
-    "watchdog": {
-      "url": "https://api.tollpay.xyz/mcp",
+    "toll-tools": {
+      "url": "https://proxy.tollpay.xyz/mcp?target=https://api.tollpay.xyz/mcp",
       "transport": "streamable-http"
     }
   }
@@ -100,30 +100,36 @@ npx @rajkaria123/toll-cli status
 # Register your server in the Toll Registry
 npx @rajkaria123/toll-cli register --url https://your-server.com/mcp`
 
-export const PROXY_SNIPPET = `# Start the Toll Proxy — auto-creates a Stellar wallet
+export const PROXY_SNIPPET = `# Start the Toll Proxy locally — auto-creates a Stellar wallet
 npx @rajkaria123/toll-proxy --target https://api.tollpay.xyz/mcp
 
 # Or with custom budget limits
 npx @rajkaria123/toll-proxy \\
   --target https://api.tollpay.xyz/mcp \\
   --budget-daily 5.00 \\
-  --budget-per-call 0.50`
+  --budget-per-call 0.50
+
+# Or use the hosted proxy (no install needed):
+# https://proxy.tollpay.xyz/mcp?target=https://api.tollpay.xyz/mcp`
 
 export const PROXY_CONFIG_SNIPPET = `// Add to Claude Desktop / Cursor MCP config:
 {
   "mcpServers": {
     "my-paid-tools": {
-      "url": "http://localhost:3010/mcp?target=https://api.tollpay.xyz/mcp",
+      "url": "https://proxy.tollpay.xyz/mcp?target=https://api.tollpay.xyz/mcp",
       "transport": "streamable-http"
     }
   }
-}`
+}
+// Or use localhost if running the proxy locally:
+// "url": "http://localhost:3010/mcp?target=https://api.tollpay.xyz/mcp"`
 
 export const REGISTRY_SNIPPET = `// Discover tools programmatically
 const resp = await fetch(
   "https://tollpay.xyz/api/registry/discover?q=search&maxPrice=0.05"
 )
 const { tools } = await resp.json()
+// 18 tools across 5 servers — free and paid
 // [{ name: "search_competitors", price: "0.01", server: { url: "..." }, ... }]`
 
 export const WALLET_SNIPPET = `import { WalletManager } from "@rajkaria123/toll-sdk"

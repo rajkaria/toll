@@ -458,7 +458,8 @@ export default function LandingPage() {
           </h2>
           <p className="text-gray-500 text-sm mb-10 max-w-2xl">
             The Toll Proxy sits between your MCP client and any Toll-powered server.
-            It auto-creates a Stellar wallet, intercepts 402 responses, signs payments, and retries — all transparently.
+            It intercepts 402 responses, signs USDC payments, and retries — all transparently.
+            Use our hosted proxy at <code className="text-emerald-400 text-xs">proxy.tollpay.xyz</code> or self-host with npx.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
