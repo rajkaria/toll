@@ -8,4 +8,6 @@ dist/
 .gstack/
 .claude/
 apps/video/
-docs/superpowers/
+docs/
+CLAUDE.md
+*.tsbuildinfo
